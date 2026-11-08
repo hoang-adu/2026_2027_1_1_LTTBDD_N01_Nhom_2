@@ -1,0 +1,17 @@
+{
+  "@@locale": "vi",
+  "app_title": "Flashcard Anh–Việt",
+  "tab_decks": "Bộ từ",
+  "tab_statistics": "Thống kê",
+  "tab_settings": "Cài đặt",
+  "common_close": "Đóng",
+  "common_comingSoon": "Đang xây dựng",
+  "deck_detailTitle": "Chi tiết bộ từ",
+  "deck_addWordTitle": "Thêm từ",
+  "deck_editWordTitle": "Sửa từ",
+  "study_title": "Học",
+  "quiz_title": "Kiểm tra",
+  "quiz_playTitle": "Làm bài",
+  "quiz_resultTitle": "Kết quả",
+  "about_title": "Giới thiệu"
+}
