@@ -1,0 +1,21 @@
+{
+  "@@locale": "en",
+  "app_title": "Flashcard EN–VI",
+  "@app_title": { "description": "Application title" },
+  "tab_decks": "Decks",
+  "@tab_decks": { "description": "Bottom navigation tab: deck list" },
+  "tab_statistics": "Statistics",
+  "@tab_statistics": { "description": "Bottom navigation tab: statistics" },
+  "tab_settings": "Settings",
+  "@tab_settings": { "description": "Bottom navigation tab: settings" },
+  "common_close": "Close",
+  "common_comingSoon": "Under construction",
+  "deck_detailTitle": "Deck details",
+  "deck_addWordTitle": "Add word",
+  "deck_editWordTitle": "Edit word",
+  "study_title": "Study",
+  "quiz_title": "Quiz",
+  "quiz_playTitle": "Taking quiz",
+  "quiz_resultTitle": "Quiz result",
+  "about_title": "About"
+}
