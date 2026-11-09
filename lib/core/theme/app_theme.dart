@@ -37,7 +37,7 @@ class AppTheme {
       colorScheme: colorScheme,
       fontFamily: fontFamilySans,
       scaffoldBackgroundColor: colorScheme.surface,
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -64,7 +64,7 @@ class AppTheme {
       fontFamily: fontFamilySans,
       scaffoldBackgroundColor: colorScheme.surface,
      
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: colorScheme.surfaceContainerHigh,
         surfaceTintColor: colorScheme.surfaceTint,
         elevation: 2,

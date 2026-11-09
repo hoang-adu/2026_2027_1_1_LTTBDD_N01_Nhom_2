@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 
-/// Helper widget giúp hiển thị danh sách item với hiệu ứng xuất hiện so le
+/// Widget hiển thị danh sách item với hiệu ứng xuất hiện so le 
 class StaggeredListItem extends StatefulWidget {
   final int index;
   final Widget child;
   final Duration duration;
-  final Duration stepDelay;
 
   const StaggeredListItem({
     super.key,
     required this.index,
     required this.child,
     this.duration = const Duration(milliseconds: 350),
-    this.stepDelay = const Duration(milliseconds: 50),
   });
 
   @override
@@ -46,11 +44,18 @@ class _StaggeredListItemState extends State<StaggeredListItem>
       curve: Curves.easeOutCubic,
     ));
 
-    Future.delayed(widget.stepDelay * widget.index, () {
-      if (mounted) {
-        _controller.forward();
-      }
-    });
+    
+    final safeIndex = widget.index.clamp(0, 8);
+    final delayMillis = safeIndex * 50;
+
+    
+    if (delayMillis == 0) {
+      if (mounted) _controller.forward();
+    } else {
+      Future.delayed(Duration(milliseconds: delayMillis), () {
+        if (mounted) _controller.forward();
+      });
+    }
   }
 
   @override
