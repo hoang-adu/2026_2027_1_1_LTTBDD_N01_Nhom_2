@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/deck_provider.dart';
 import '../../providers/quiz_provider.dart';
-import '../../data/models/quiz_model.dart';
+import '../../data/models/quiz_type.dart';
 import 'quiz_result_screen.dart';
 
 class QuizPlayScreen extends StatefulWidget {
