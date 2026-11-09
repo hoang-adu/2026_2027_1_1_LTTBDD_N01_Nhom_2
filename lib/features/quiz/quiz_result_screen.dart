@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/models/quiz_model.dart';
+import '../../data/models/quiz_result.dart';
 
 class QuizResultScreen extends StatelessWidget {
   final QuizResult result;
