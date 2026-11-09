@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../providers/settings_provider.dart'; 
+import '../../providers/locale_provider.dart';
+import '../../providers/theme_provider.dart';
 import '../about/about_screen.dart';
 
 /// Màn cài đặt (ngôn ngữ, dark mode, mục Giới thiệu). [Đạt]
