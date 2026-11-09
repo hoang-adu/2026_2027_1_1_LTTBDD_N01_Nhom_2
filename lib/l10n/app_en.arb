@@ -18,4 +18,6 @@
   "quiz_playTitle": "Taking quiz",
   "quiz_resultTitle": "Quiz result",
   "about_title": "About"
+  "study_emptyDeck": "This flashcard deck is currently empty.",
+  "study_addWord": "Add new word"
 }

@@ -14,4 +14,6 @@
   "quiz_playTitle": "Làm bài",
   "quiz_resultTitle": "Kết quả",
   "about_title": "Giới thiệu"
+  "study_emptyDeck": "Bộ flashcard này hiện đang trống.",
+  "study_addWord": "Thêm từ mới"
 }
