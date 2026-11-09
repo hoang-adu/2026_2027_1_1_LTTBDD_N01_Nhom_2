@@ -1,37 +1,63 @@
 import 'package:flutter/foundation.dart';
+import '../models/deck.dart';
+import '../models/word.dart';
 
-import '../data/models/deck.dart';
-import '../data/models/word.dart';
-import 'deck_provider.dart';
+class StudyProvider with ChangeNotifier {
+  Deck? _currentDeck;
+  List<Word> _currentWords = [];
+  int _currentIndex = 0;
+  bool _isFinished = false;
 
-/// Trạng thái phiên học flashcard. [Hải Anh]
-/// Nhận DeckProvider qua ChangeNotifierProxyProvider (xem main.dart).
-// TODO(haianh): cài đặt đầy đủ — hiện chỉ là khung để biên dịch.
-class StudyProvider extends ChangeNotifier {
-  DeckProvider _deckProvider;
+  Deck? get currentDeck => _currentDeck;
+  List<Word> get currentWords => _currentWords;
+  int get currentIndex => _currentIndex;
+  bool get isFinished => _isFinished;
+  
+  Word? get currentWord => (_currentWords.isNotEmpty && _currentIndex < _currentWords.length) 
+      ? _currentWords[_currentIndex] 
+      : null;
 
-  StudyProvider(DeckProvider deckProvider) : _deckProvider = deckProvider;
+  bool startStudy(String deckId, List<Deck> allDecks) {
+    try {
+      _currentDeck = allDecks.firstWhere((d) => d.id == deckId);
+    } catch (_) {
+      _currentDeck = null;
+    }
 
-  /// Được ProxyProvider gọi khi DeckProvider thay đổi.
-  void updateDeckProvider(DeckProvider deckProvider) {
-    _deckProvider = deckProvider;
+    if (_currentDeck == null || _currentDeck!.words.isEmpty) {
+      _currentWords = [];
+      _isFinished = true;
+      notifyListeners();
+      return false;
+    }
+
+    _currentWords = _currentDeck!.words;
+    _currentIndex = 0;
+    _isFinished = false;
+    notifyListeners();
+    return true;
   }
 
-  DeckProvider get deckProvider => _deckProvider;
+  void goTo(int index) {
+    if (index >= 0 && index < _currentWords.length) {
+      _currentIndex = index;
+      notifyListeners();
+    }
+  }
 
-  /// false nếu bộ rỗng/không tồn tại.
-  // TODO(haianh): nạp bộ từ, đặt currentIndex = 0.
-  bool startStudy(String deckId) => false;
+  void toggleLearned() {
+    if (currentWord != null) {
+      currentWord!.isLearned = !currentWord!.isLearned;
+      notifyListeners();
+    }
+  }
 
-  Deck? get currentDeck => null; // TODO(haianh)
-  int get currentIndex => 0; // TODO(haianh)
-  Word? get currentWord => null; // TODO(haianh)
-
-  void nextCard() {} // TODO(haianh)
-  void previousCard() {} // TODO(haianh)
-  void goTo(int index) {} // TODO(haianh)
-  bool get isFinished => false; // TODO(haianh)
-
-  /// Gọi deckProvider.toggleLearned(...) cho từ hiện tại.
-  Future<void> toggleLearned() async {} // TODO(haianh)
+  void nextCard() {
+    if (_currentIndex < _currentWords.length - 1) {
+      _currentIndex++;
+    } else {
+      _isFinished = true;
+    }
+    notifyListeners();
+  }
 }
