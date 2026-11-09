@@ -135,12 +135,23 @@ void main() {
       expect(brightness(tester), Brightness.dark);
     });
 
-    testWidgets('mục Giới thiệu nhóm mở AboutScreen', (tester) async {
+    testWidgets('mục Giới thiệu nhóm mở AboutScreen có đủ 3 thành viên', (
+      tester,
+    ) async {
       await pumpApp(tester, await prefsWith({}));
       await openSettings(tester);
       await tester.tap(find.text('Giới thiệu nhóm'));
       await tester.pumpAndSettle();
+
       expect(find.text('Giới thiệu'), findsOneWidget);
+      expect(find.text('Nguyễn Việt Hoàng'), findsOneWidget);
+      expect(find.text('Nguyễn Hùng Hải Anh'), findsOneWidget);
+      expect(find.text('Nguyễn Tiến Đạt'), findsOneWidget);
+      expect(find.text('Nhóm trưởng'), findsOneWidget);
+      // Monogram theo tên
+      expect(find.text('H'), findsOneWidget);
+      expect(find.text('A'), findsOneWidget);
+      expect(find.text('Đ'), findsOneWidget);
     });
   });
 }
