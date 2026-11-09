@@ -60,5 +60,20 @@
   "settings_language": "Ngôn ngữ",
   "settings_darkMode": "Chế độ tối",
   "settings_aboutGroup": "Giới thiệu nhóm",
-  "about_groupDescription": "Thông tin thành viên nhóm phát triển dự án."
+  "about_groupDescription": "Thông tin thành viên nhóm phát triển dự án.",
+  "settings_langVi": "Tiếng Việt",
+  "settings_langEn": "English",
+  "about_appDescription": "Học từ vựng Anh–Việt bằng flashcard và bài kiểm tra. Hoạt động hoàn toàn ngoại tuyến.",
+  "about_version": "Phiên bản {version}",
+  "about_membersTitle": "Thành viên nhóm",
+  "about_courseTitle": "Học phần",
+  "about_courseName": "Lập trình cho thiết bị di động (N01)",
+  "about_university": "Trường Đại học Phenikaa",
+  "about_leader": "Nhóm trưởng",
+  "about_member1Name": "Nguyễn Việt Hoàng",
+  "about_member1Role": "Kiến trúc, bộ từ & từ vựng",
+  "about_member2Name": "Nguyễn Hùng Hải Anh",
+  "about_member2Role": "Học flashcard & kiểm tra",
+  "about_member3Name": "Nguyễn Tiến Đạt",
+  "about_member3Role": "Giao diện, đa ngôn ngữ, thống kê & cài đặt"
 }

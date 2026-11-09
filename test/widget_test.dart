@@ -8,13 +8,15 @@ void main() {
   Future<void> pumpApp(WidgetTester tester, Map<String, Object> values) async {
     SharedPreferences.setMockInitialValues(values);
     final prefs = await SharedPreferences.getInstance();
-    await tester
-        .pumpWidget(AppProviders(prefs: prefs, child: const FlashcardApp()));
+    await tester.pumpWidget(
+      AppProviders(prefs: prefs, child: const FlashcardApp()),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('Mở app: 3 tab tiếng Việt (mặc định) và chuyển tab được',
-      (tester) async {
+  testWidgets('Mở app: 3 tab tiếng Việt (mặc định) và chuyển tab được', (
+    tester,
+  ) async {
     await pumpApp(tester, {});
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.byType(NavigationDestination), findsNWidgets(3));
@@ -22,7 +24,7 @@ void main() {
 
     await tester.tap(find.text('Cài đặt'));
     await tester.pumpAndSettle();
-    expect(find.text('Giới thiệu'), findsOneWidget);
+    expect(find.text('Giới thiệu nhóm'), findsOneWidget);
   });
 
   testWidgets('Locale en + dark mode đọc từ SharedPreferences', (tester) async {

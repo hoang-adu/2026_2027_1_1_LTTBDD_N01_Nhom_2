@@ -70,5 +70,21 @@
   "settings_language": "Language",
   "settings_darkMode": "Dark mode",
   "settings_aboutGroup": "About group",
-  "about_groupDescription": "Project development team members."
+  "about_groupDescription": "Project development team members.",
+  "settings_langVi": "Tiếng Việt",
+  "settings_langEn": "English",
+  "about_appDescription": "Learn English–Vietnamese vocabulary with flashcards and quizzes. Works fully offline.",
+  "about_version": "Version {version}",
+  "@about_version": { "placeholders": { "version": { "type": "String" } } },
+  "about_membersTitle": "Team members",
+  "about_courseTitle": "Course",
+  "about_courseName": "Mobile Programming (N01)",
+  "about_university": "Phenikaa University",
+  "about_leader": "Leader",
+  "about_member1Name": "Nguyễn Việt Hoàng",
+  "about_member1Role": "Architecture, decks & vocabulary",
+  "about_member2Name": "Nguyễn Hùng Hải Anh",
+  "about_member2Role": "Flashcard study & quizzes",
+  "about_member3Name": "Nguyễn Tiến Đạt",
+  "about_member3Role": "Theme, languages, statistics & settings"
 }
