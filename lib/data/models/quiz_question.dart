@@ -19,15 +19,18 @@ class QuizQuestion {
     required this.type,
   });
 
-  /// Điền từ: bỏ khoảng trắng 2 đầu, không phân biệt hoa/thường.
-  /// Trắc nghiệm: so khớp chính xác.
+  /// Điền từ: bỏ khoảng trắng 2 đầu + gộp khoảng trắng thừa ở giữa,
+  /// không phân biệt hoa/thường. Trắc nghiệm: so khớp chính xác.
   bool isCorrect(String answer) {
     switch (type) {
       case QuizType.typing:
-        return answer.trim().toLowerCase() ==
-            correctAnswer.trim().toLowerCase();
+        return normalize(answer) == normalize(correctAnswer);
       case QuizType.multipleChoice:
         return answer == correctAnswer;
     }
   }
+
+  /// "  Ice   CREAM " → "ice cream".
+  static String normalize(String s) =>
+      s.trim().replaceAll(RegExp(r'\s+'), ' ').toLowerCase();
 }
