@@ -18,4 +18,9 @@
   "quiz_playTitle": "Taking quiz",
   "quiz_resultTitle": "Quiz result",
   "about_title": "About"
+  "settings_title": "Settings",
+  "settings_language": "Language",
+  "settings_darkMode": "Dark mode",
+  "settings_aboutGroup": "About group",
+  "about_groupDescription": "Project development team members."
 }
