@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/study_provider.dart';
-import '../../providers/deck_provider.dart'; // Để lấy danh sách decks truyền vào startStudy
+import '../../core/services/tts_service.dart';
 import 'flashcard_widget.dart';
 
 class StudyScreen extends StatefulWidget {
@@ -21,7 +21,6 @@ class _StudyScreenState extends State<StudyScreen> {
     super.initState();
     _pageController = PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Chỉ truyền đúng 1 tham số deckId 
       final success = context.read<StudyProvider>().startStudy(widget.deckId);
       if (!success) {
         _handleEmptyDeck();
@@ -112,7 +111,7 @@ class _StudyScreenState extends State<StudyScreen> {
                                   child: FlashcardWidget(
                                     word: word,
                                     onSpeak: () {
-                                      // Xử lý phát âm TTS tại đây nếu cần
+                                      TtsService.instance.speak(word.term);
                                     },
                                   ),
                                 );
