@@ -1,3 +1,4 @@
+import 'dart:math' show pi;
 import 'package:flutter/material.dart';
 import '../../data/models/word.dart';
 
@@ -46,7 +47,7 @@ class _FlashcardWidgetState extends State<FlashcardWidget> {
                 final isUnder = (ValueKey(_showFront) != child?.key);
                 var tilt = ((animation.value - 0.5).abs() - 0.5) * 0.003;
                 tilt *= isUnder ? -1.0 : 1.0;
-                final val = transform.Matrix4.rotationY(rotateAnim.value)..setEntry(3, 2, tilt);
+                final val = Matrix4.rotationY(rotateAnim.value)..setEntry(3, 2, tilt);
                 return Transform(
                   transform: val,
                   alignment: Alignment.center,
