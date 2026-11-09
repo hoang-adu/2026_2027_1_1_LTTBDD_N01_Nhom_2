@@ -60,5 +60,7 @@
   "settings_language": "Ngôn ngữ",
   "settings_darkMode": "Chế độ tối",
   "settings_aboutGroup": "Giới thiệu nhóm",
-  "about_groupDescription": "Thông tin thành viên nhóm phát triển dự án."
+  "about_groupDescription": "Thông tin thành viên nhóm phát triển dự án.",
+  "settings_langVi": "Tiếng Việt",
+  "settings_langEn": "English"
 }

@@ -17,14 +17,16 @@ class SettingsScreen extends StatelessWidget {
     final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tab_settings)),
+      appBar: AppBar(title: Text(l10n.settings_title)),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           // Nhóm 1: Cài đặt ứng dụng (Ngôn ngữ & Giao diện)
           Card(
             elevation: 1,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Column(
               children: [
                 // Mục Ngôn ngữ
@@ -34,14 +36,15 @@ class SettingsScreen extends StatelessWidget {
                   trailing: DropdownButton<Locale>(
                     value: localeProvider.currentLocale,
                     underline: const SizedBox(),
-                    items: const [
+                    key: const ValueKey('settings_languageDropdown'),
+                    items: [
                       DropdownMenuItem(
-                        value: Locale('vi'),
-                        child: Text('Tiếng Việt'),
+                        value: const Locale('vi'),
+                        child: Text(l10n.settings_langVi),
                       ),
                       DropdownMenuItem(
-                        value: Locale('en'),
-                        child: Text('English'),
+                        value: const Locale('en'),
+                        child: Text(l10n.settings_langEn),
                       ),
                     ],
                     onChanged: (Locale? newLocale) {
@@ -68,12 +71,14 @@ class SettingsScreen extends StatelessWidget {
           // Nhóm 2: Thông tin chung
           Card(
             elevation: 1,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Column(
               children: [
                 ListTile(
                   leading: const Icon(Icons.info_outline),
-                  title: Text(l10n.about_title),
+                  title: Text(l10n.settings_aboutGroup),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => Navigator.push(
                     context,

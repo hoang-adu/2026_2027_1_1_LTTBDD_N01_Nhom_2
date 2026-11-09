@@ -70,5 +70,7 @@
   "settings_language": "Language",
   "settings_darkMode": "Dark mode",
   "settings_aboutGroup": "About group",
-  "about_groupDescription": "Project development team members."
+  "about_groupDescription": "Project development team members.",
+  "settings_langVi": "Tiếng Việt",
+  "settings_langEn": "English"
 }
