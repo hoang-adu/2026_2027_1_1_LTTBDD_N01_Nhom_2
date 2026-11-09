@@ -13,10 +13,4 @@
   "quiz_title": "Kiểm tra",
   "quiz_playTitle": "Làm bài",
   "quiz_resultTitle": "Kết quả",
-  "about_title": "Giới thiệu"
-  "settings_title": "Cài đặt",
-  "settings_language": "Ngôn ngữ",
-  "settings_darkMode": "Chế độ tối",
-  "settings_aboutGroup": "Giới thiệu nhóm",
-  "about_groupDescription": "Thông tin thành viên nhóm phát triển dự án."
 }
