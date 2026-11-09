@@ -21,11 +21,8 @@ class _StudyScreenState extends State<StudyScreen> {
     super.initState();
     _pageController = PageController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final deckProvider = context.read<DeckProvider>();
-      final studyProvider = context.read<StudyProvider>();
-      
-      // Truyền đúng danh sách decks vào hàm startStudy theo hợp đồng Provider
-      final success = studyProvider.startStudy(widget.deckId, deckProvider.decks);
+      // Chỉ truyền đúng 1 tham số deckId 
+      final success = context.read<StudyProvider>().startStudy(widget.deckId);
       if (!success) {
         _handleEmptyDeck();
       }
