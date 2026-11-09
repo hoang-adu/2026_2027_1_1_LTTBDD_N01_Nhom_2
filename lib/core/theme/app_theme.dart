@@ -1,22 +1,82 @@
 import 'package:flutter/material.dart';
 
-/// Theme sáng/tối Material 3. [Đạt]
-// TODO(dat): bảng màu, font Be Vietnam Pro / IBM Plex Mono, tonal elevation.
 class AppTheme {
   AppTheme._();
 
-  static const Color _seed = Color(0xFF3F51B5);
+  static const String fontFamilySans = 'BeVietnamPro';
+  static const String fontFamilyMono = 'IBMPlexMono';
 
-  static ThemeData get light => ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: _seed),
-      );
+  // Màu chủ đạo: Teal (Xanh ngọc)
+  static const Color seedColor = Color(0xFF006A60);
 
-  static ThemeData get dark => ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: _seed,
-          brightness: Brightness.dark,
+  // Helper cho TextStyle dạng Monospace (Dùng cho phiên âm IPA, số liệu thống kê)
+  static TextStyle monoStyle({
+    double? fontSize,
+    FontWeight? fontWeight,
+    Color? color,
+    double? height,
+  }) {
+    return TextStyle(
+      fontFamily: fontFamilyMono,
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: color,
+      height: height,
+    );
+  }
+
+  // Theme Sáng
+  static ThemeData light() {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: Brightness.light,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      fontFamily: fontFamilySans,
+      scaffoldBackgroundColor: colorScheme.surface,
+      cardTheme: CardTheme(
+        elevation: 1,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
-      );
+      ),
+      appBarTheme: AppBarTheme(
+        centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        scrolledUnderElevation: 2,
+      ),
+    );
+  }
+
+  // Theme Tối
+  static ThemeData dark() {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: Brightness.dark,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: colorScheme,
+      fontFamily: fontFamilySans,
+      scaffoldBackgroundColor: colorScheme.surface,
+     
+      cardTheme: CardTheme(
+        color: colorScheme.surfaceContainerHigh,
+        surfaceTintColor: colorScheme.surfaceTint,
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      appBarTheme: AppBarTheme(
+        centerTitle: true,
+        backgroundColor: colorScheme.surface,
+        scrolledUnderElevation: 3,
+      ),
+    );
+  }
 }
