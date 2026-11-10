@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/deck_provider.dart';
-import '../../data/models/quiz_model.dart';
+import '../../data/models/quiz_type.dart';
 import 'quiz_play_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 
 class QuizScreen extends StatelessWidget {
   final String deckId;

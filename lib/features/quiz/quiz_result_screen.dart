@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../data/models/quiz_model.dart';
+import '../../data/models/quiz_question.dart';
+import '../../data/models/quiz_result.dart';
+import '../../l10n/app_localizations.dart';
 import 'quiz_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class QuizResultScreen extends StatelessWidget {
   final QuizResult result;
@@ -11,11 +12,11 @@ class QuizResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.quiz_result_title),
+        title: Text(l10n?.quiz_result_title ?? 'Kết quả'),
         automaticallyImplyLeading: false,
       ),
       body: Padding(
@@ -44,25 +45,28 @@ class QuizResultScreen extends StatelessWidget {
             const SizedBox(height: 12),
             Expanded(
               child: ListView.builder(
-                itemCount: result.details.length,
+                itemCount: result.questions.length,
                 itemBuilder: (context, index) {
-                  final detail = result.details[index];
+                  final question = result.questions[index];
+                  final userAnswer = result.answerOf(question.id) ?? '';
+                  final isCorrect = question.isCorrect(userAnswer);
+
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       leading: Icon(
-                        detail.isCorrect ? Icons.check_circle : Icons.cancel,
-                        color: detail.isCorrect ? Colors.green : Colors.red,
+                        isCorrect ? Icons.check_circle : Icons.cancel,
+                        color: isCorrect ? Colors.green : Colors.red,
                       ),
-                      title: Text('Từ: ${detail.question.word.term}'),
+                      title: Text('Từ: ${question.word.term}'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Nghĩa: ${detail.question.word.meaning}'),
-                          Text('Bạn chọn: ${detail.userAnswer.isEmpty ? "(Bỏ qua)" : detail.userAnswer}'),
-                          if (!detail.isCorrect)
+                          Text('Nghĩa: ${question.word.meaning}'),
+                          Text('Bạn chọn: ${userAnswer.isEmpty ? "(Bỏ qua)" : userAnswer}'),
+                          if (!isCorrect)
                             Text(
-                              'Đáp án đúng: ${detail.question.correctAnswer}',
+                              'Đáp án đúng: ${question.correctAnswer}',
                               style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
                             ),
                         ],
@@ -78,25 +82,21 @@ class QuizResultScreen extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
-                      // Làm lại: quay về màn hình chọn quiz
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => QuizScreen(deckId: deckId)),
                       );
                     },
-                    style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                    child: Text(l10n.quiz_retry),
+                    child: const Text('Làm lại'),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Về bộ từ: pop hết các màn quiz để về lại chi tiết deck
-                      Navigator.popUntil(context, (route) => route.isFirst || route.settings.name == '/deck_detail');
+                      Navigator.popUntil(context, (route) => route.isFirst);
                     },
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
-                    child: Text(l10n.quiz_back_to_deck),
+                    child: const Text('Về bộ từ'),
                   ),
                 ),
               ],
