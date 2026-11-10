@@ -1,17 +1,23 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
-/// Widget hiển thị danh sách item với hiệu ứng xuất hiện so le 
+/// Phần tử xuất hiện so le: mờ dần + trượt nhẹ từ dưới lên, trễ theo [index].
 class StaggeredListItem extends StatefulWidget {
-  final int index;
-  final Widget child;
-  final Duration duration;
-
   const StaggeredListItem({
     super.key,
     required this.index,
     required this.child,
+    this.step = const Duration(milliseconds: 50),
     this.duration = const Duration(milliseconds: 350),
   });
+
+  final int index;
+  final Widget child;
+
+  /// Độ trễ thêm cho mỗi phần tử (tối đa 8 bậc).
+  final Duration step;
+  final Duration duration;
 
   @override
   State<StaggeredListItem> createState() => _StaggeredListItemState();
@@ -20,41 +26,45 @@ class StaggeredListItem extends StatefulWidget {
 class _StaggeredListItemState extends State<StaggeredListItem>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<double> _fadeAnimation;
-  late final Animation<Offset> _slideAnimation;
+  late final Animation<double> _fade;
+  late final Animation<Offset> _slide;
+  bool _started = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    );
 
-    _fadeAnimation = CurvedAnimation(
+    // Một controller duy nhất, độ trễ nằm trong Interval nên không cần Timer.
+    final delay = widget.step * math.min(widget.index, 8);
+    final total = widget.duration + delay;
+    final begin = delay.inMilliseconds / total.inMilliseconds;
+
+    _controller = AnimationController(vsync: this, duration: total);
+
+    _fade = CurvedAnimation(
       parent: _controller,
-      curve: Curves.easeOut,
+      curve: Interval(begin, 1, curve: Curves.easeOut),
     );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 0.15),
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.15),
       end: Offset.zero,
     ).animate(CurvedAnimation(
       parent: _controller,
-      curve: Curves.easeOutCubic,
+      curve: Interval(begin, 1, curve: Curves.easeOutCubic),
     ));
+  }
 
-    
-    final safeIndex = widget.index.clamp(0, 8);
-    final delayMillis = safeIndex * 50;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_started) return;
+    _started = true;
 
-    
-    if (delayMillis == 0) {
-      if (mounted) _controller.forward();
+    // Tôn trọng cài đặt "giảm chuyển động" của hệ thống.
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _controller.value = 1;
     } else {
-      Future.delayed(Duration(milliseconds: delayMillis), () {
-        if (mounted) _controller.forward();
-      });
+      _controller.forward();
     }
   }
 
@@ -67,9 +77,9 @@ class _StaggeredListItemState extends State<StaggeredListItem>
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
-      opacity: _fadeAnimation,
+      opacity: _fade,
       child: SlideTransition(
-        position: _slideAnimation,
+        position: _slide,
         child: widget.child,
       ),
     );
