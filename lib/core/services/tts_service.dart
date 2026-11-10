@@ -4,7 +4,8 @@ import 'package:flutter_tts/flutter_tts.dart';
 /// Đọc phát âm bằng flutter_tts (singleton, không phải Provider).
 /// Mọi lỗi platform bị bắt và ghi log, không làm crash app
 class TtsService {
-  /// [engine] 
+  /// [engine] cho phép truyền FlutterTts giả khi test; bỏ trống thì dùng engine thật.
+  // ignore: prefer_initializing_formals
   TtsService({FlutterTts? engine, this.speechRate = 0.45}) : _engine = engine;
 
   static final TtsService instance = TtsService();
