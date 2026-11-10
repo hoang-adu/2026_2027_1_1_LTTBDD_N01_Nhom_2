@@ -152,7 +152,14 @@ void main() {
       expect(find.text('cat'), findsOneWidget);
       expect(find.text('con mèo'), findsOneWidget);
       expect(find.text('/kæt/'), findsOneWidget);
-      expect(find.text('Chưa thuộc'), findsOneWidget);
+      // Nhãn trạng thái trên thẻ từ (chip lọc cũng có chữ này).
+      expect(
+        find.descendant(
+          of: find.byType(WordTile),
+          matching: find.text('Chưa thuộc'),
+        ),
+        findsOneWidget,
+      );
 
       // Quay lại danh sách: thẻ bộ cập nhật số từ
       Navigator.of(tester.element(find.byType(WordTile))).pop();
@@ -192,7 +199,13 @@ void main() {
 
       expect(find.text('kitten'), findsOneWidget);
       expect(find.text('cat'), findsNothing);
-      expect(find.text('Đã thuộc'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(WordTile),
+          matching: find.text('Đã thuộc'),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Vuốt để xóa từ có xác nhận', (tester) async {
