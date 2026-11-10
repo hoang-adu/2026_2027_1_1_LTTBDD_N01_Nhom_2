@@ -17,7 +17,7 @@ class QuizResultScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.quiz_resultTitle),
-        automaticallyImplyLeading: false, // Chống bấm back quay lại màn hình chơi (TC15)
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -26,10 +26,17 @@ class QuizResultScreen extends StatelessWidget {
           children: [
             Icon(Icons.emoji_events, size: 80, color: colorScheme.primary),
             const SizedBox(height: 16),
-            Text(
-              '${result.score.toStringAsFixed(1)}%',
-              style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: colorScheme.primary),
-              textAlign: TextAlign.center,
+            // Hiệu ứng chạy số điểm từ 0 đến điểm thực tế (Animated Count)
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 0.0, end: result.score),
+              duration: const Duration(milliseconds: 1000),
+              builder: (context, value, child) {
+                return Text(
+                  '${value.toStringAsFixed(1)}%',
+                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: colorScheme.primary),
+                  textAlign: TextAlign.center,
+                );
+              },
             ),
             const SizedBox(height: 8),
             Text(
@@ -81,7 +88,6 @@ class QuizResultScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                // Nút Làm lại: quay về màn hình chọn quiz của bộ từ này
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
@@ -95,11 +101,9 @@ class QuizResultScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Nút Về bộ từ: Pop 2 lần để về lại màn hình DeckDetailScreen thay vì văng về root
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Pop khỏi màn hình kết quả và màn hình QuizPlayScreen để về DeckDetail
                       Navigator.pop(context);
                       Navigator.pop(context);
                     },
