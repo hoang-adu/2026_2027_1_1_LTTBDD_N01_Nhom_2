@@ -138,5 +138,13 @@
   "about_universityLabel": "University",
   "about_universityValue": "Phenikaa University",
   "about_teamTitle": "Team members",
-  "about_studentId": "Student ID"
+  "about_studentId": "Student ID",
+  "deck_searchHint": "Search by word or meaning",
+  "deck_searchClear": "Clear search",
+  "deck_filterAll": "All",
+  "deck_sortTooltip": "Sort",
+  "deck_sortAZ": "A–Z",
+  "deck_sortZA": "Z–A",
+  "deck_noResultsTitle": "No matching words",
+  "deck_noResultsHint": "Try another keyword or change the filter."
 }
