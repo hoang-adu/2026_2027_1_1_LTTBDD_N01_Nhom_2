@@ -110,4 +110,10 @@
   "quiz_userAnswer": "Your answer: {answer}",
   "quiz_skippedAnswer": "(Skipped)",
   "quiz_correctAnswer": "Correct answer: {answer}"
+  "quiz_descMc": "Test your memory with 4 options",
+  "quiz_descTyping": "Type the exact matching English word",
+  "quiz_userTyped": "You typed: {answer}",
+  "quiz_exitTitle": "Quit Quiz?",
+  "quiz_exitMessage": "Your current progress will not be saved. Are you sure you want to quit?",
+  "quiz_exitConfirm": "Quit"
 }

@@ -6,11 +6,12 @@ import '../../data/models/quiz_type.dart';
 import '../../l10n/app_localizations.dart';
 import 'quiz_result_screen.dart';
 
+/// Màn hình thực hiện các câu hỏi quiz (Trắc nghiệm hoặc Điền từ).
 class QuizPlayScreen extends StatefulWidget {
   final String deckId;
   final QuizType type;
 
-  const QuizPlayScreen({Key? key, required this.deckId, required this.type}) : super(key: key);
+  const QuizPlayScreen({super.key, required this.deckId, required this.type});
 
   @override
   State<QuizPlayScreen> createState() => _QuizPlayScreenState();
@@ -48,6 +49,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
     super.dispose();
   }
 
+  /// Xử lý nộp câu trả lời và chuyển câu tiếp theo.
   void _handleNext(AppLocalizations l10n, {bool isSkip = false}) {
     final quizProvider = context.read<QuizProvider>();
     final currentQ = quizProvider.currentQuestion;
@@ -86,12 +88,12 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final quizProvider = context.watch<QuizProvider>();
 
     if (quizProvider.questions.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.quiz_loading)),
+        appBar: AppBar(title: Text(l10n!.quiz_loading)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -101,7 +103,6 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
     final total = quizProvider.questions.length;
     final colorScheme = Theme.of(context).colorScheme;
 
-    // Bọc PopScope bên ngoài Scaffold để hỏi xác nhận khi bấm nút back / thoát
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -109,8 +110,8 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
         final shouldQuit = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Thoát bài kiểm tra?'),
-            content: const Text('Tiến trình làm bài hiện tại sẽ không được lưu. Bạn có chắc chắn muốn thoát?'),
+            title: Text(l10n.quiz_exitTitle),
+            content: Text(l10n.quiz_exitMessage),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
@@ -118,7 +119,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(l10n.deck_delete),
+                child: Text(l10n.quiz_exitConfirm),
               ),
             ],
           ),
@@ -144,13 +145,13 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.orange,
+                          color: colorScheme.tertiary,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           _consecutiveCorrect >= 3 ? '🔥 x3' : '⚡ x2',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: colorScheme.onTertiary,
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                           ),
@@ -169,7 +170,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
             children: [
               LinearProgressIndicator(
                 value: (currentIndex + 1) / total,
-                backgroundColor: colorScheme.surfaceVariant,
+                backgroundColor: colorScheme.surfaceContainerHighest,
                 valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
               ),
               const SizedBox(height: 24),
@@ -224,6 +225,17 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                   ),
                   autofocus: true,
                   onSubmitted: (_) => _handleNext(l10n),
+                ),
+                const SizedBox(height: 12),
+                // Thêm nút Xác nhận riêng biệt cho chế độ điền từ theo yêu cầu prompt mục 2
+                ElevatedButton(
+                  onPressed: () => _handleNext(l10n),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    backgroundColor: colorScheme.secondaryContainer,
+                    foregroundColor: colorScheme.onSecondaryContainer,
+                  ),
+                  child: Text(l10n.quiz_confirm, style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 const Spacer(),
               ],
