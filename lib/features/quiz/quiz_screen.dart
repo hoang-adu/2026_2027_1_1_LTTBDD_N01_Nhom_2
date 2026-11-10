@@ -20,7 +20,7 @@ class QuizScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n!.quiz_title),
+        title: Text(l10n.quiz_title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

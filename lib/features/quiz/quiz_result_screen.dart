@@ -19,7 +19,7 @@ class QuizResultScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n!.quiz_resultTitle),
+        title: Text(l10n.quiz_resultTitle),
         automaticallyImplyLeading: false,
       ),
       body: Padding(
@@ -32,15 +32,10 @@ class QuizResultScreen extends StatelessWidget {
             // Sử dụng AnimatedCount của Đạt cho phần trăm điểm số (mục 3 prompt)
             Center(
               child: AnimatedCount(
-                end: result.score,
+                value: result.score.round(),
+                suffix: '%',
                 duration: const Duration(milliseconds: 1000),
-                builder: (context, value) {
-                  return Text(
-                    '${value.toStringAsFixed(1)}%',
-                    style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: colorScheme.primary),
-                    textAlign: TextAlign.center,
-                  );
-                },
+                style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: colorScheme.primary),
               ),
             ),
             const SizedBox(height: 8),

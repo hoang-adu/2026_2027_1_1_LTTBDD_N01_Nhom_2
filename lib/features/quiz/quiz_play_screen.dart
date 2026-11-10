@@ -20,27 +20,26 @@ class QuizPlayScreen extends StatefulWidget {
 class _QuizPlayScreenState extends State<QuizPlayScreen> {
   final TextEditingController _typingController = TextEditingController();
   String? _selectedOption;
-  bool _isInitialized = false;
+  // true khi đã sinh xong bộ câu hỏi cho lượt làm bài này.
+  bool _ready = false;
   int _consecutiveCorrect = 0;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_isInitialized) {
-      _isInitialized = true;
-      final deckProvider = Provider.of<DeckProvider>(context, listen: false);
-      final quizProvider = context.read<QuizProvider>();
-      final deck = deckProvider.getDeckById(widget.deckId);
-      
-      if (deck != null) {
-        final success = quizProvider.generateQuiz(deck, widget.type);
-        if (!success) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pop(context);
-          });
-        }
+  void initState() {
+    super.initState();
+    // Sinh câu hỏi sau frame đầu: generateQuiz gọi notifyListeners,
+    // không được gọi trong lúc đang dựng widget.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final deck = context.read<DeckProvider>().getDeckById(widget.deckId);
+      final success =
+          deck != null && context.read<QuizProvider>().generateQuiz(deck, widget.type);
+      if (!success) {
+        Navigator.pop(context);
+        return;
       }
-    }
+      setState(() => _ready = true);
+    });
   }
 
   @override
@@ -91,9 +90,10 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
     final l10n = AppLocalizations.of(context);
     final quizProvider = context.watch<QuizProvider>();
 
-    if (quizProvider.questions.isEmpty) {
+    // Chưa sinh xong (hoặc còn câu hỏi của lượt trước) → màn chờ.
+    if (!_ready || quizProvider.questions.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n!.quiz_loading)),
+        appBar: AppBar(title: Text(l10n.quiz_loading)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
