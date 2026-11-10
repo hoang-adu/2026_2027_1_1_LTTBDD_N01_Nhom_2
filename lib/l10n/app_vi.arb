@@ -76,4 +76,19 @@
   "about_member2Role": "Học flashcard & kiểm tra",
   "about_member3Name": "Nguyễn Tiến Đạt",
   "about_member3Role": "Giao diện, đa ngôn ngữ, thống kê & cài đặt"
+  "quiz_select_mode": "Chọn hình thức kiểm tra",
+  "quiz_multiple_choice": "Trắc nghiệm",
+  "quiz_typing": "Gõ từ",
+  "quiz_not_enough_words_mc": "Bộ từ cần ít nhất 4 từ để làm trắc nghiệm.",
+  "quiz_not_enough_words_typing": "Bộ từ cần ít nhất 1 từ để làm bài gõ từ.",
+  "quiz_question_progress": "Câu hỏi {current}/{total}",
+  "quiz_skip": "Bỏ qua",
+  "quiz_submit": "Xác nhận",
+  "quiz_next": "Câu tiếp theo",
+  "quiz_finish": "Hoàn thành",
+  "quiz_result_title": "Kết quả kiểm tra",
+  "quiz_score": "Điểm số: {score}%",
+  "quiz_correct_answers": "Số câu đúng: {correct}/{total}",
+  "quiz_retry": "Làm lại",
+  "quiz_back_to_deck": "Về bộ từ"
 }
