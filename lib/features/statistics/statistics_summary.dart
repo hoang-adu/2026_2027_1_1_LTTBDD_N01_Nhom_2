@@ -1,6 +1,6 @@
 import '../../providers/deck_provider.dart';
 
-/// Số liệu của một bộ từ, lấy từ Deck + DeckProvider.deckProgress.
+/// Số liệu của một bộ từ để hiển thị.
 class DeckStat {
   const DeckStat({
     required this.id,
@@ -15,15 +15,13 @@ class DeckStat {
   final int total;
   final int learned;
 
-  /// Tiến độ 0.0–1.0 (từ DeckProvider.deckProgress).
+  /// Tỷ lệ đã thuộc, 0.0–1.0 (lấy từ DeckProvider.deckProgress).
   final double progress;
 
-  /// Phần trăm làm tròn để hiển thị.
   int get percent => (progress * 100).round();
 }
 
-/// Ảnh chụp số liệu cho StatisticsScreen, gom về một chỗ để widget
-/// chỉ việc hiển thị (không tính toán rải rác trong build).
+/// Số liệu tổng hợp cho StatisticsScreen, tính tại một chỗ để widget không tự tính.
 class StatisticsSummary {
   const StatisticsSummary({
     required this.decks,
@@ -31,10 +29,8 @@ class StatisticsSummary {
     required this.totalLearned,
   });
 
-  /// Đọc từ DeckProvider: getDecks, wordCount/learnedCount,
-  /// totalLearnedWords, deckProgress.
   factory StatisticsSummary.fromProvider(DeckProvider provider) {
-    final decks = [
+    final stats = [
       for (final d in provider.getDecks())
         DeckStat(
           id: d.id,
@@ -45,8 +41,8 @@ class StatisticsSummary {
         ),
     ];
     return StatisticsSummary(
-      decks: decks,
-      totalWords: decks.fold(0, (sum, d) => sum + d.total),
+      decks: stats,
+      totalWords: stats.fold<int>(0, (sum, d) => sum + d.total),
       totalLearned: provider.totalLearnedWords,
     );
   }
@@ -58,11 +54,11 @@ class StatisticsSummary {
   bool get isEmpty => decks.isEmpty;
   int get deckCount => decks.length;
 
-  /// Tỷ lệ hoàn thành toàn cục (phần trăm, làm tròn); chưa có từ → 0.
-  int get completionPercent =>
-      totalWords == 0 ? 0 : (totalLearned * 100 / totalWords).round();
+  double get completionRate =>
+      totalWords == 0 ? 0.0 : totalLearned / totalWords;
+  int get completionPercent => (completionRate * 100).round();
 
-  /// Số từ của bộ lớn nhất, dùng để đặt trục Y của biểu đồ.
+  /// Số từ lớn nhất trong một bộ, dùng để chia trục Y của biểu đồ.
   int get maxDeckWords =>
-      decks.fold(0, (max, d) => d.total > max ? d.total : max);
+      decks.fold<int>(0, (max, d) => d.total > max ? d.total : max);
 }
