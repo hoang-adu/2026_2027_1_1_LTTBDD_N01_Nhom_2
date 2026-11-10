@@ -7,18 +7,25 @@ const String _kAppVersion = '1.0.0';
 
 /// Thông tin một thành viên (mã sinh viên/email để trống thì không hiển thị).
 class _Member {
-  const _Member({required this.name, this.studentId = '', this.email = ''});
+  const _Member({
+    required this.name,
+    this.studentId = '',
+    this.email = '',
+    this.isLeader = false,
+  });
 
   final String name;
   final String studentId;
   final String email;
+  final bool isLeader;
 }
 
-/// Danh sách thành viên
+/// Danh sách thành viên — điền mã sinh viên / email vào đây khi có.
 const List<_Member> _kMembers = [
-  _Member(name: 'Nguyễn Việt Hoàng'),
-  _Member(name: 'Nguyễn Hùng Hải Anh'),
-  _Member(name: 'Nguyễn Tiến Đạt'),
+  _Member(
+      name: 'Nguyễn Việt Hoàng', studentId: '', email: '', isLeader: true),
+  _Member(name: 'Nguyễn Hùng Hải Anh', studentId: '', email: ''),
+  _Member(name: 'Nguyễn Tiến Đạt', studentId: '', email: ''),
 ];
 
 /// Chữ cái đầu của tên gọi để làm monogram.
@@ -37,7 +44,7 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
 
     // AppBar tự có nút quay lại khi màn được mở bằng Navigator.push.
@@ -82,7 +89,7 @@ class _HeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     return Card(
@@ -105,7 +112,7 @@ class _HeaderCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${l10n.about_version} $_kAppVersion',
+              l10n.about_version(_kAppVersion),
               style: theme.textTheme.bodyMedium
                   ?.copyWith(color: scheme.onSurfaceVariant),
             ),
@@ -123,7 +130,7 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
@@ -208,7 +215,7 @@ class _MemberCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final subStyle = theme.textTheme.bodySmall
@@ -235,6 +242,12 @@ class _MemberCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(member.name, style: theme.textTheme.titleMedium),
+                  if (member.isLeader) ...[
+                    const SizedBox(height: 4),
+                    Text(l10n.about_leader,
+                        style: theme.textTheme.labelMedium
+                            ?.copyWith(color: scheme.primary)),
+                  ],
                   if (member.studentId.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Text('${l10n.about_studentId}: ${member.studentId}',
