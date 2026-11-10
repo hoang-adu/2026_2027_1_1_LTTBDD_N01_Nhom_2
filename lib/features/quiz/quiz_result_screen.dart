@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../data/models/quiz_question.dart';
 import '../../data/models/quiz_result.dart';
 import '../../l10n/app_localizations.dart';
 import 'quiz_screen.dart';
@@ -12,35 +11,36 @@ class QuizResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.quiz_result_title ?? 'Kết quả'),
-        automaticallyImplyLeading: false,
+        title: Text(l10n.quiz_resultTitle),
+        automaticallyImplyLeading: false, // Chống bấm back quay lại màn hình chơi (TC15)
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(Icons.emoji_events, size: 80, color: Colors.amber),
+            Icon(Icons.emoji_events, size: 80, color: colorScheme.primary),
             const SizedBox(height: 16),
             Text(
               '${result.score.toStringAsFixed(1)}%',
-              style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.blue),
+              style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: colorScheme.primary),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Số câu đúng: ${result.correctAnswers}/${result.totalQuestions}',
+              l10n.quiz_correctAnswers(result.correctAnswers, result.totalQuestions),
               style: const TextStyle(fontSize: 18, color: Colors.grey),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Chi tiết câu trả lời:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              l10n.quiz_resultDetails,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Expanded(
@@ -56,18 +56,20 @@ class QuizResultScreen extends StatelessWidget {
                     child: ListTile(
                       leading: Icon(
                         isCorrect ? Icons.check_circle : Icons.cancel,
-                        color: isCorrect ? Colors.green : Colors.red,
+                        color: isCorrect ? colorScheme.primary : colorScheme.error,
                       ),
-                      title: Text('Từ: ${question.word.term}'),
+                      title: Text('${l10n.quiz_wordTerm} ${question.word.term}'),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Nghĩa: ${question.word.meaning}'),
-                          Text('Bạn chọn: ${userAnswer.isEmpty ? "(Bỏ qua)" : userAnswer}'),
+                          Text('${l10n.quiz_wordMeaning} ${question.word.meaning}'),
+                          Text(
+                            '${l10n.quiz_userAnswer} ${userAnswer.isEmpty ? l10n.quiz_skippedAnswer : userAnswer}',
+                          ),
                           if (!isCorrect)
                             Text(
-                              'Đáp án đúng: ${question.correctAnswer}',
-                              style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold),
+                              '${l10n.quiz_correctAnswer} ${question.correctAnswer}',
+                              style: TextStyle(color: colorScheme.error, fontWeight: FontWeight.bold),
                             ),
                         ],
                       ),
@@ -79,6 +81,7 @@ class QuizResultScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
+                // Nút Làm lại: quay về màn hình chọn quiz của bộ từ này
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
@@ -87,16 +90,25 @@ class QuizResultScreen extends StatelessWidget {
                         MaterialPageRoute(builder: (context) => QuizScreen(deckId: deckId)),
                       );
                     },
-                    child: const Text('Làm lại'),
+                    style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                    child: Text(l10n.quiz_retry),
                   ),
                 ),
                 const SizedBox(width: 16),
+                // Nút Về bộ từ: Pop 2 lần để về lại màn hình DeckDetailScreen thay vì văng về root
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.popUntil(context, (route) => route.isFirst);
+                      // Pop khỏi màn hình kết quả và màn hình QuizPlayScreen để về DeckDetail
+                      Navigator.pop(context);
+                      Navigator.pop(context);
                     },
-                    child: const Text('Về bộ từ'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                    ),
+                    child: Text(l10n.quiz_backToDeck),
                   ),
                 ),
               ],

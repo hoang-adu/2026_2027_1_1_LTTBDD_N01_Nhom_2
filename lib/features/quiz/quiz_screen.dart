@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/deck_provider.dart';
 import '../../data/models/quiz_type.dart';
-import 'quiz_play_screen.dart';
 import '../../l10n/app_localizations.dart';
+import 'quiz_play_screen.dart';
 
 class QuizScreen extends StatelessWidget {
   final String deckId;
@@ -19,85 +19,61 @@ class QuizScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.quiz_select_mode),
+        title: Text(l10n.quiz_title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Card Trắc nghiệm (Multiple Choice)
+            Text(
+              l10n.quiz_selectMode,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 24),
+            // Trắc nghiệm Card
             Card(
-              elevation: 4,
-              child: InkWell(
+              child: ListTile(
+                title: Text(l10n.quiz_multipleChoice),
+                subtitle: const Text('Kiểm tra trí nhớ qua 4 đáp án'),
+                trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
                   if (wordCount < 4) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.quiz_not_enough_words_mc)),
+                      SnackBar(content: Text(l10n.quiz_notEnoughWordsMc)),
                     );
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => QuizPlayScreen(
-                          deckId: deckId,
-                          type: QuizType.multipleChoice,
-                        ),
-                      ),
-                    );
+                    return;
                   }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QuizPlayScreen(deckId: deckId, type: QuizType.multipleChoice),
+                    ),
+                  );
                 },
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.quiz, size: 40, color: Colors.blue),
-                      const SizedBox(width: 20),
-                      Text(
-                        l10n.quiz_multiple_choice,
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
-            const SizedBox(height: 20),
-            // Card Gõ từ (Typing)
+            const SizedBox(height: 16),
+            // Điền từ Card
             Card(
-              elevation: 4,
-              child: InkWell(
+              child: ListTile(
+                title: Text(l10n.quiz_typing),
+                subtitle: const Text('Gõ chính xác từ tiếng Anh tương ứng'),
+                trailing: const Icon(Icons.arrow_forward_ios),
                 onTap: () {
                   if (wordCount < 1) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.quiz_not_enough_words_typing)),
+                      SnackBar(content: Text(l10n.quiz_notEnoughWordsTyping)),
                     );
-                  } else {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => QuizPlayScreen(
-                          deckId: deckId,
-                          type: QuizType.typing,
-                        ),
-                      ),
-                    );
+                    return;
                   }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QuizPlayScreen(deckId: deckId, type: QuizType.typing),
+                    ),
+                  );
                 },
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.edit, size: 40, color: Colors.green),
-                      const SizedBox(width: 20),
-                      Text(
-                        l10n.quiz_typing,
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
           ],
