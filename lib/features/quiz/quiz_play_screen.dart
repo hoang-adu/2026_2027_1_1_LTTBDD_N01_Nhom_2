@@ -47,12 +47,12 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
     super.dispose();
   }
 
-  void _handleNext(AppLocalizations? l10n, {bool isSkip = false}) {
+  void _handleNext(AppLocalizations l10n, {bool isSkip = false}) {
     final quizProvider = context.read<QuizProvider>();
 
     if (widget.type == QuizType.typing) {
       if (isSkip) {
-        quizProvider.submitAnswer(''); // Bỏ qua tính là sai (chuỗi rỗng)
+        quizProvider.submitAnswer(''); // Bỏ qua tính là chuỗi rỗng (sai)
       } else {
         quizProvider.submitAnswer(_typingController.text);
       }
@@ -83,12 +83,12 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final quizProvider = context.watch<QuizProvider>();
 
     if (quizProvider.questions.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n?.quiz_selectMode ?? 'Quiz')),
+        appBar: AppBar(title: Text(l10n.quiz_loading)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -100,7 +100,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${l10n?.quiz_selectMode ?? "Kiểm tra"} (${currentIndex + 1}/$total)'),
+        title: Text('${l10n.quiz_playTitle} (${currentIndex + 1}/$total)'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -153,7 +153,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
               TextField(
                 controller: _typingController,
                 decoration: InputDecoration(
-                  labelText: l10n?.quiz_typing ?? 'Nhập từ tiếng Anh tương ứng',
+                  labelText: l10n.quiz_typeInstruction,
                   border: const OutlineInputBorder(),
                 ),
                 autofocus: true,
@@ -171,11 +171,11 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: Text(l10n?.quiz_skip ?? 'Bỏ qua'),
+                    child: Text(l10n.quiz_skip),
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Nút Xác nhận / Tiếp theo / Nộp bài
+                // Nút Xác nhận / Nộp bài
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => _handleNext(l10n),
@@ -185,7 +185,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                       foregroundColor: colorScheme.onPrimary,
                     ),
                     child: Text(
-                      quizProvider.hasNext ? (l10n?.quiz_next ?? 'Câu tiếp theo') : (l10n?.quiz_submit ?? 'Nộp bài'),
+                      quizProvider.hasNext ? l10n.quiz_next : l10n.quiz_submit,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
