@@ -5,21 +5,22 @@ import '../../data/models/quiz_type.dart';
 import '../../l10n/app_localizations.dart';
 import 'quiz_play_screen.dart';
 
+/// Màn hình chọn chế độ kiểm tra từ vựng cho bộ từ.
 class QuizScreen extends StatelessWidget {
   final String deckId;
 
-  const QuizScreen({Key? key, required this.deckId}) : super(key: key);
+  const QuizScreen({super.key, required this.deckId});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final deckProvider = Provider.of<DeckProvider>(context);
     final deck = deckProvider.getDeckById(deckId);
     final wordCount = deck?.words.length ?? 0;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.quiz_title),
+        title: Text(l10n!.quiz_title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -39,7 +40,7 @@ class QuizScreen extends StatelessWidget {
                 child: Card(
                   child: ListTile(
                     title: Text(l10n.quiz_multipleChoice),
-                    subtitle: const Text('Kiểm tra trí nhớ qua 4 đáp án'),
+                    subtitle: Text(l10n.quiz_descMc),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: () {
                       if (wordCount < 4) {
@@ -68,7 +69,7 @@ class QuizScreen extends StatelessWidget {
                 child: Card(
                   child: ListTile(
                     title: Text(l10n.quiz_typing),
-                    subtitle: const Text('Gõ chính xác từ tiếng Anh tương ứng'),
+                    subtitle: Text(l10n.quiz_descTyping),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: () {
                       if (wordCount < 1) {
