@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import '../../providers/deck_provider.dart';
 import '../../providers/quiz_provider.dart';
-import '../../data/models/quiz_model.dart';
+import '../../data/models/quiz_type.dart';
+import '../../data/models/quiz_question.dart';
 import 'quiz_result_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import '../../l10n/app_localizations.dart';
 class QuizPlayScreen extends StatefulWidget {
   final String deckId;
   final QuizType type;
