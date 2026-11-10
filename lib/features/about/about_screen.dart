@@ -1,62 +1,72 @@
 import 'package:flutter/material.dart';
 
+import '../../core/widgets/staggered_list.dart';
 import '../../l10n/app_localizations.dart';
 
-/// Màn giới thiệu ứng dụng & nhóm phát triển. [Đạt]
+const String _kAppVersion = '1.0.0';
+
+/// Thông tin một thành viên (mã sinh viên/email để trống thì không hiển thị).
+class _Member {
+  const _Member({required this.name, this.studentId = '', this.email = ''});
+
+  final String name;
+  final String studentId;
+  final String email;
+}
+
+/// Danh sách thành viên
+const List<_Member> _kMembers = [
+  _Member(name: 'Nguyễn Việt Hoàng'),
+  _Member(name: 'Nguyễn Hùng Hải Anh'),
+  _Member(name: 'Nguyễn Tiến Đạt'),
+];
+
+/// Chữ cái đầu của tên gọi để làm monogram.
+String _initialOf(String fullName) {
+  final parts = fullName.trim().split(RegExp(r'\s+'));
+  final given = parts.last;
+  if (given.isEmpty) return '?';
+  return String.fromCharCode(given.runes.first).toUpperCase();
+}
+
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
-  /// Khớp `version` trong pubspec.yaml (không dùng package_info).
-  static const String appVersion = '1.0.0';
+  /// Chiều rộng nội dung tối đa để màn rộng không bị kéo giãn.
+  static const double _maxWidth = 600;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
-    final members = [
-      _Member(l10n.about_member1Name, l10n.about_member1Role, isLeader: true),
-      _Member(l10n.about_member2Name, l10n.about_member2Role),
-      _Member(l10n.about_member3Name, l10n.about_member3Role),
-    ];
-
+    // AppBar tự có nút quay lại khi màn được mở bằng Navigator.push.
     return Scaffold(
       appBar: AppBar(title: Text(l10n.about_title)),
-      body: Center(
+      body: Align(
+        alignment: Alignment.topCenter,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints: const BoxConstraints(maxWidth: _maxWidth),
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              const _AppHeader(version: appVersion),
-              const SizedBox(height: 24),
-              _SectionTitle(l10n.about_membersTitle),
-              Card(
-                child: Column(
-                  children: [
-                    for (var i = 0; i < members.length; i++) ...[
-                      if (i > 0) const Divider(height: 1, indent: 72),
-                      _MemberTile(member: members[i]),
-                    ],
-                  ],
-                ),
-              ),
+              const _HeaderCard(),
               const SizedBox(height: 16),
-              _SectionTitle(l10n.about_courseTitle),
-              Card(
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.menu_book_outlined),
-                      title: Text(l10n.about_courseName),
-                    ),
-                    const Divider(height: 1, indent: 72),
-                    ListTile(
-                      leading: const Icon(Icons.school_outlined),
-                      title: Text(l10n.about_university),
-                    ),
-                  ],
+              const _InfoCard(),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
+                child: Text(
+                  l10n.about_teamTitle,
+                  style: theme.textTheme.titleMedium,
                 ),
               ),
+              for (var i = 0; i < _kMembers.length; i++)
+                StaggeredListItem(
+                  key: ValueKey(_kMembers[i].name),
+                  index: i,
+                  child: _MemberCard(member: _kMembers[i]),
+                ),
             ],
           ),
         ),
@@ -65,128 +75,181 @@ class AboutScreen extends StatelessWidget {
   }
 }
 
-class _Member {
-  const _Member(this.name, this.role, {this.isLeader = false});
+//  Đầu trang
 
-  final String name;
-  final String role;
-  final bool isLeader;
-
-  /// Monogram = chữ cái đầu của tên (từ cuối), vd "Nguyễn Tiến Đạt" → "Đ".
-  String get monogram {
-    final parts = name.trim().split(RegExp(r'\s+'));
-    return parts.last.characters.first.toUpperCase();
-  }
-}
-
-/// Logo chữ + tên app + mô tả + phiên bản.
-class _AppHeader extends StatelessWidget {
-  const _AppHeader({required this.version});
-
-  final String version;
+class _HeaderCard extends StatelessWidget {
+  const _HeaderCard();
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final s = theme.colorScheme;
-
-    return Column(
-      children: [
-        Container(
-          width: 72,
-          height: 72,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: s.primaryContainer,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Icon(Icons.style, size: 36, color: s.onPrimaryContainer),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          l10n.app_title,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          l10n.about_version(version),
-          style: theme.textTheme.bodySmall?.copyWith(
-            fontFamily: 'IBMPlexMono',
-            color: s.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          l10n.about_appDescription,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: s.onSurfaceVariant,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.text);
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 0, 4, 8),
-      child: Text(
-        text,
-        style: theme.textTheme.titleSmall?.copyWith(
-          color: theme.colorScheme.primary,
-          fontWeight: FontWeight.w600,
+    final scheme = theme.colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 36,
+              backgroundColor: scheme.primaryContainer,
+              child: Icon(Icons.style_outlined,
+                  size: 36, color: scheme.onPrimaryContainer),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.about_appName,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${l10n.about_version} $_kAppVersion',
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _MemberTile extends StatelessWidget {
-  const _MemberTile({required this.member});
+// Thông tin môn học
+
+class _InfoCard extends StatelessWidget {
+  const _InfoCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Column(
+          children: [
+            _InfoRow(
+              icon: Icons.menu_book_outlined,
+              label: l10n.about_courseLabel,
+              value: l10n.about_courseValue,
+            ),
+            _InfoRow(
+              icon: Icons.groups_outlined,
+              label: l10n.about_groupLabel,
+              value: l10n.about_groupValue,
+            ),
+            _InfoRow(
+              icon: Icons.person_outline,
+              label: l10n.about_lecturerLabel,
+              value: l10n.about_lecturerValue,
+            ),
+            _InfoRow(
+              icon: Icons.school_outlined,
+              label: l10n.about_universityLabel,
+              value: l10n.about_universityValue,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: scheme.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: theme.textTheme.labelMedium
+                      ?.copyWith(color: scheme.onSurfaceVariant),
+                ),
+                const SizedBox(height: 2),
+                Text(value, style: theme.textTheme.bodyLarge),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+//  Thành viên
+
+class _MemberCard extends StatelessWidget {
+  const _MemberCard({required this.member});
 
   final _Member member;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    final s = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final subStyle = theme.textTheme.bodySmall
+        ?.copyWith(color: scheme.onSurfaceVariant);
 
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: member.isLeader
-            ? s.primaryContainer
-            : s.secondaryContainer,
-        foregroundColor: member.isLeader
-            ? s.onPrimaryContainer
-            : s.onSecondaryContainer,
-        child: Text(
-          member.monogram,
-          style: const TextStyle(fontWeight: FontWeight.w700),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: scheme.primaryContainer,
+              child: Text(
+                _initialOf(member.name),
+                style: theme.textTheme.titleLarge
+                    ?.copyWith(color: scheme.onPrimaryContainer),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(member.name, style: theme.textTheme.titleMedium),
+                  if (member.studentId.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text('${l10n.about_studentId}: ${member.studentId}',
+                        style: subStyle),
+                  ],
+                  if (member.email.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(member.email, style: subStyle),
+                  ],
+                ],
+              ),
+            ),
+          ],
         ),
       ),
-      title: Text(member.name),
-      subtitle: Text(member.role),
-      trailing: member.isLeader
-          ? Chip(
-              label: Text(l10n.about_leader),
-              visualDensity: VisualDensity.compact,
-              side: BorderSide.none,
-              backgroundColor: s.tertiaryContainer,
-              labelStyle: TextStyle(color: s.onTertiaryContainer),
-            )
-          : null,
     );
   }
 }
