@@ -47,14 +47,22 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
     super.dispose();
   }
 
-  void _handleNext(AppLocalizations? l10n) {
+  void _handleNext(AppLocalizations? l10n, {bool isSkip = false}) {
     final quizProvider = context.read<QuizProvider>();
 
     if (widget.type == QuizType.typing) {
-      quizProvider.submitAnswer(_typingController.text);
+      if (isSkip) {
+        quizProvider.submitAnswer(''); // Bỏ qua tính là sai (chuỗi rỗng)
+      } else {
+        quizProvider.submitAnswer(_typingController.text);
+      }
       _typingController.clear();
     } else {
-      quizProvider.submitAnswer(_selectedOption ?? '');
+      if (isSkip) {
+        quizProvider.submitAnswer('');
+      } else {
+        quizProvider.submitAnswer(_selectedOption ?? '');
+      }
       _selectedOption = null;
     }
 
@@ -154,17 +162,35 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
               const Spacer(),
             ],
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => _handleNext(l10n),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-              ),
-              child: Text(
-                quizProvider.hasNext ? (l10n?.quiz_next ?? 'Câu tiếp theo') : (l10n?.quiz_submit ?? 'Nộp bài'),
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
+            Row(
+              children: [
+                // Nút Bỏ qua
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _handleNext(l10n, isSkip: true),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: Text(l10n?.quiz_skip ?? 'Bỏ qua'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Nút Xác nhận / Tiếp theo / Nộp bài
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _handleNext(l10n),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                    ),
+                    child: Text(
+                      quizProvider.hasNext ? (l10n?.quiz_next ?? 'Câu tiếp theo') : (l10n?.quiz_submit ?? 'Nộp bài'),
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
