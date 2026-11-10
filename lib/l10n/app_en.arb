@@ -87,4 +87,19 @@
   "about_member2Role": "Flashcard study & quizzes",
   "about_member3Name": "Nguyễn Tiến Đạt",
   "about_member3Role": "Theme, languages, statistics & settings"
+  "quiz_select_mode": "Select Quiz Mode",
+  "quiz_multiple_choice": "Multiple Choice",
+  "quiz_typing": "Typing",
+  "quiz_not_enough_words_mc": "Deck must have at least 4 words for Multiple Choice.",
+  "quiz_not_enough_words_typing": "Deck must have at least 1 word for Typing.",
+  "quiz_question_progress": "Question {current}/{total}",
+  "quiz_skip": "Skip",
+  "quiz_submit": "Submit",
+  "quiz_next": "Next Question",
+  "quiz_finish": "Finish",
+  "quiz_result_title": "Quiz Results",
+  "quiz_score": "Score: {score}%",
+  "quiz_correct_answers": "Correct Answers: {correct}/{total}",
+  "quiz_retry": "Retry",
+  "quiz_back_to_deck": "Back to Deck"
 }
