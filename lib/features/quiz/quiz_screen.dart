@@ -31,49 +31,61 @@ class QuizScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
-            // Trắc nghiệm Card
-            Card(
-              child: ListTile(
-                title: Text(l10n.quiz_multipleChoice),
-                subtitle: const Text('Kiểm tra trí nhớ qua 4 đáp án'),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  if (wordCount < 4) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.quiz_notEnoughWordsMc)),
-                    );
-                    return;
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QuizPlayScreen(deckId: deckId, type: QuizType.multipleChoice),
-                    ),
-                  );
-                },
+            // Trắc nghiệm Card bọc Hero
+            Hero(
+              tag: 'quiz_mode_mc',
+              child: Material(
+                color: Colors.transparent,
+                child: Card(
+                  child: ListTile(
+                    title: Text(l10n.quiz_multipleChoice),
+                    subtitle: const Text('Kiểm tra trí nhớ qua 4 đáp án'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      if (wordCount < 4) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.quiz_notEnoughWordsMc)),
+                        );
+                        return;
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => QuizPlayScreen(deckId: deckId, type: QuizType.multipleChoice),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 16),
-            // Điền từ Card
-            Card(
-              child: ListTile(
-                title: Text(l10n.quiz_typing),
-                subtitle: const Text('Gõ chính xác từ tiếng Anh tương ứng'),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () {
-                  if (wordCount < 1) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.quiz_notEnoughWordsTyping)),
-                    );
-                    return;
-                  }
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QuizPlayScreen(deckId: deckId, type: QuizType.typing),
-                    ),
-                  );
-                },
+            // Điền từ Card bọc Hero
+            Hero(
+              tag: 'quiz_mode_typing',
+              child: Material(
+                color: Colors.transparent,
+                child: Card(
+                  child: ListTile(
+                    title: Text(l10n.quiz_typing),
+                    subtitle: const Text('Gõ chính xác từ tiếng Anh tương ứng'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      if (wordCount < 1) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.quiz_notEnoughWordsTyping)),
+                        );
+                        return;
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => QuizPlayScreen(deckId: deckId, type: QuizType.typing),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ],

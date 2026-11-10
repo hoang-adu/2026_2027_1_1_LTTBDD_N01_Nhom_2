@@ -20,6 +20,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
   final TextEditingController _typingController = TextEditingController();
   String? _selectedOption;
   bool _isInitialized = false;
+  int _consecutiveCorrect = 0; // Biến đếm số câu đúng liên tiếp (Combo)
 
   @override
   void didChangeDependencies() {
@@ -49,22 +50,25 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
 
   void _handleNext(AppLocalizations l10n, {bool isSkip = false}) {
     final quizProvider = context.read<QuizProvider>();
+    final currentQ = quizProvider.currentQuestion;
 
+    String userAnswer = '';
     if (widget.type == QuizType.typing) {
-      if (isSkip) {
-        quizProvider.submitAnswer(''); // Bỏ qua tính là chuỗi rỗng (sai)
-      } else {
-        quizProvider.submitAnswer(_typingController.text);
-      }
+      userAnswer = isSkip ? '' : _typingController.text;
       _typingController.clear();
     } else {
-      if (isSkip) {
-        quizProvider.submitAnswer('');
-      } else {
-        quizProvider.submitAnswer(_selectedOption ?? '');
-      }
+      userAnswer = isSkip ? '' : (_selectedOption ?? '');
       _selectedOption = null;
     }
+
+    // Kiểm tra đúng/sai để tính combo
+    if (!isSkip && currentQ.isCorrect(userAnswer)) {
+      _consecutiveCorrect++;
+    } else {
+      _consecutiveCorrect = 0; // Ngắt combo nếu sai hoặc bỏ qua
+    }
+
+    quizProvider.submitAnswer(userAnswer);
 
     if (quizProvider.hasNext) {
       quizProvider.nextQuestion();
@@ -100,7 +104,39 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${l10n.quiz_playTitle} (${currentIndex + 1}/$total)'),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text('${l10n.quiz_playTitle} (${currentIndex + 1}/$total)'),
+            ),
+            // Hiển thị Badge Combo x2 / x3 nếu trả lời đúng liên tiếp từ 2 câu trở lên
+            if (_consecutiveCorrect >= 2)
+              TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0.8, end: 1.2),
+                duration: const Duration(milliseconds: 300),
+                builder: (context, scale, child) {
+                  return Transform.scale(
+                    scale: scale,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        _consecutiveCorrect >= 3 ? '🔥 x3' : '⚡ x2',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -113,16 +149,23 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
               valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
             ),
             const SizedBox(height: 24),
-            Card(
-              elevation: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Text(
-                  widget.type == QuizType.multipleChoice
-                      ? question.word.term
-                      : '${question.word.meaning}${question.word.phonetic != null ? ' (${question.word.phonetic})' : ''}',
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+            // Hero Animation khớp với QuizScreen
+            Hero(
+              tag: widget.type == QuizType.multipleChoice ? 'quiz_mode_mc' : 'quiz_mode_typing',
+              child: Material(
+                color: Colors.transparent,
+                child: Card(
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Text(
+                      widget.type == QuizType.multipleChoice
+                          ? question.word.term
+                          : '${question.word.meaning}${question.word.phonetic != null ? ' (${question.word.phonetic})' : ''}',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -164,7 +207,6 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
             const SizedBox(height: 16),
             Row(
               children: [
-                // Nút Bỏ qua
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => _handleNext(l10n, isSkip: true),
@@ -175,7 +217,6 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Nút Xác nhận / Nộp bài
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => _handleNext(l10n),
