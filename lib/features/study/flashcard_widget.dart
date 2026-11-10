@@ -1,16 +1,14 @@
 import 'dart:math' show pi;
+
 import 'package:flutter/material.dart';
+
 import '../../data/models/word.dart';
 
 class FlashcardWidget extends StatefulWidget {
   final Word word;
   final VoidCallback onSpeak;
 
-  const FlashcardWidget({
-    Key? key,
-    required this.word,
-    required this.onSpeak,
-  }) : super(key: key);
+  const FlashcardWidget({super.key, required this.word, required this.onSpeak});
 
   @override
   State<FlashcardWidget> createState() => _FlashcardWidgetState();
@@ -47,7 +45,8 @@ class _FlashcardWidgetState extends State<FlashcardWidget> {
                 final isUnder = (ValueKey(_showFront) != child?.key);
                 var tilt = ((animation.value - 0.5).abs() - 0.5) * 0.003;
                 tilt *= isUnder ? -1.0 : 1.0;
-                final val = Matrix4.rotationY(rotateAnim.value)..setEntry(3, 2, tilt);
+                final val = Matrix4.rotationY(rotateAnim.value)
+                  ..setEntry(3, 2, tilt);
                 return Transform(
                   transform: val,
                   alignment: Alignment.center,
@@ -66,18 +65,16 @@ class _FlashcardWidgetState extends State<FlashcardWidget> {
                     children: [
                       Text(
                         widget.word.term,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 12),
                       if (phonetic.isNotEmpty)
                         Text(
                           phonetic,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontStyle: FontStyle.italic,
-                              ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontStyle: FontStyle.italic),
                         ),
                       const SizedBox(height: 24),
                       IconButton(
@@ -96,9 +93,8 @@ class _FlashcardWidgetState extends State<FlashcardWidget> {
                     children: [
                       Text(
                         meaning,
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.w500),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../providers/study_provider.dart';
 import '../../core/services/tts_service.dart';
 import 'flashcard_widget.dart';
@@ -7,7 +8,7 @@ import 'flashcard_widget.dart';
 class StudyScreen extends StatefulWidget {
   final String deckId;
 
-  const StudyScreen({Key? key, required this.deckId}) : super(key: key);
+  const StudyScreen({super.key, required this.deckId});
 
   @override
   State<StudyScreen> createState() => _StudyScreenState();
@@ -75,73 +76,87 @@ class _StudyScreenState extends State<StudyScreen> {
           body: total == 0
               ? const SizedBox.shrink()
               : provider.isFinished
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.celebration, size: 80, color: Colors.amber),
-                          const SizedBox(height: 16),
-                          Text('Bạn đã hoàn thành bộ thẻ!', style: Theme.of(context).textTheme.headlineSmall),
-                          const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Quay lại'),
-                          ),
-                        ],
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.celebration,
+                        size: 80,
+                        color: Colors.amber,
                       ),
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
+                      const SizedBox(height: 16),
+                      Text(
+                        'Bạn đã hoàn thành bộ thẻ!',
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Quay lại'),
+                      ),
+                    ],
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      LinearProgressIndicator(
+                        value: total > 0
+                            ? (provider.currentIndex + 1) / total
+                            : 0.0,
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: PageView.builder(
+                          controller: _pageController,
+                          itemCount: total,
+                          onPageChanged: (index) {
+                            provider.goTo(index);
+                          },
+                          itemBuilder: (context, index) {
+                            final word = words[index];
+                            return Center(
+                              child: FlashcardWidget(
+                                word: word,
+                                onSpeak: () {
+                                  TtsService.instance.speak(word.term);
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          LinearProgressIndicator(
-                            value: total > 0 ? (provider.currentIndex + 1) / total : 0.0,
-                          ),
-                          const SizedBox(height: 16),
-                          Expanded(
-                            child: PageView.builder(
-                              controller: _pageController,
-                              itemCount: total,
-                              onPageChanged: (index) {
-                                provider.goTo(index);
-                              },
-                              itemBuilder: (context, index) {
-                                final word = words[index];
-                                return Center(
-                                  child: FlashcardWidget(
-                                    word: word,
-                                    onSpeak: () {
-                                      TtsService.instance.speak(word.term);
-                                    },
-                                  ),
-                                );
-                              },
+                          IconButton(
+                            onPressed: () => provider.toggleLearned(),
+                            icon: Icon(
+                              provider.currentWord?.isLearned == true
+                                  ? Icons.check_circle
+                                  : Icons.circle_outlined,
+                              color: provider.currentWord?.isLearned == true
+                                  ? Colors.green
+                                  : null,
+                              size: 28,
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                onPressed: () => provider.toggleLearned(),
-                                icon: Icon(
-                                  provider.currentWord?.isLearned == true
-                                      ? Icons.check_circle
-                                      : Icons.circle_outlined,
-                                  color: provider.currentWord?.isLearned == true ? Colors.green : null,
-                                  size: 28,
-                                ),
-                              ),
-                              Text(
-                                '${provider.currentIndex + 1}/$total',
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(width: 48),
-                            ],
+                          Text(
+                            '${provider.currentIndex + 1}/$total',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
+                          const SizedBox(width: 48),
                         ],
                       ),
-                    ),
+                    ],
+                  ),
+                ),
         );
       },
     );
