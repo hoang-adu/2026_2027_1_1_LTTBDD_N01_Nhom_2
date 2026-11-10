@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../data/models/deck.dart';
 import '../../data/models/word.dart';
+import '../../data/models/word_filter.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/deck_provider.dart';
 import '../quiz/quiz_screen.dart';
@@ -13,8 +14,12 @@ import 'widgets/deck_layout.dart';
 import 'widgets/empty_state.dart';
 import 'widgets/staggered_item.dart';
 import 'widgets/swipe_delete_background.dart';
+import 'widgets/word_list_toolbar.dart';
 import 'widgets/word_tile.dart';
 import 'word_form.dart';
+
+/// Kiểu sắp xếp danh sách từ: giữ thứ tự thêm, A–Z hoặc Z–A theo term.
+enum _WordSort { none, az, za }
 
 /// Chi tiết bộ từ: nút Học / Kiểm tra + danh sách từ (FR04–FR06). [Hoàng]
 class DeckDetailScreen extends StatefulWidget {
@@ -34,10 +39,41 @@ class _DeckDetailScreenState extends State<DeckDetailScreen>
   )..forward();
   bool _fabExtended = true;
 
+  // State tạm của ô tìm / bộ lọc / sắp xếp: chỉ sống trong màn này,
+  // không đưa vào provider toàn cục.
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
+  WordFilter _filter = WordFilter.all;
+  _WordSort _sort = _WordSort.none;
+
   @override
   void dispose() {
     _stagger.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  // ---------- Tìm / lọc / sắp xếp ----------
+
+  void _onQueryChanged(String value) => setState(() => _query = value);
+
+  void _clearQuery() {
+    _searchController.clear();
+    setState(() => _query = '');
+  }
+
+  void _onFilterChanged(WordFilter f) => setState(() => _filter = f);
+
+  void _onSortChanged(_WordSort s) => setState(() => _sort = s);
+
+  /// Kết hợp tìm + lọc + sắp xếp, toàn bộ logic nằm ở DeckProvider.
+  List<Word> _visibleWords(DeckProvider provider) {
+    var words = provider.searchWords(widget.deckId, _query);
+    words = provider.filterWords(words, _filter);
+    if (_sort != _WordSort.none) {
+      words = provider.sortWords(words, ascending: _sort == _WordSort.az);
+    }
+    return words;
   }
 
   bool _onScroll(UserScrollNotification n) {
@@ -118,8 +154,16 @@ class _DeckDetailScreenState extends State<DeckDetailScreen>
       );
     }
 
+    final hasWords = deck.words.isNotEmpty;
+    final words = hasWords ? _visibleWords(provider) : const <Word>[];
+
     return Scaffold(
-      appBar: AppBar(title: Text(deck.name, overflow: TextOverflow.ellipsis)),
+      appBar: AppBar(
+        title: Text(deck.name, overflow: TextOverflow.ellipsis),
+        actions: [
+          if (hasWords) _SortMenu(selected: _sort, onSelected: _onSortChanged),
+        ],
+      ),
       floatingActionButton: CollapsibleFab(
         key: const ValueKey('word_addFab'),
         extended: _fabExtended,
@@ -146,7 +190,7 @@ class _DeckDetailScreenState extends State<DeckDetailScreen>
                     ),
                   ),
                 ),
-                if (deck.words.isEmpty)
+                if (!hasWords)
                   SliverFillRemaining(
                     hasScrollBody: false,
                     child: EmptyState(
@@ -155,18 +199,43 @@ class _DeckDetailScreenState extends State<DeckDetailScreen>
                       icon: Icons.translate,
                     ),
                   )
-                else
+                else ...[
                   SliverPadding(
-                    padding: EdgeInsets.fromLTRB(side, 8, side, 96),
-                    sliver: SliverList.builder(
-                      itemCount: deck.words.length,
-                      itemBuilder: (context, i) => StaggeredItem(
-                        animation: _stagger,
-                        index: i,
-                        child: _buildWord(deck.words[i]),
+                    padding: EdgeInsets.fromLTRB(side, 8, side, 0),
+                    sliver: SliverToBoxAdapter(
+                      child: WordListToolbar(
+                        controller: _searchController,
+                        filter: _filter,
+                        onQueryChanged: _onQueryChanged,
+                        onClear: _clearQuery,
+                        onFilterChanged: _onFilterChanged,
                       ),
                     ),
                   ),
+                  if (words.isEmpty)
+                    // Có từ nhưng không khớp tìm/lọc
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: EmptyState(
+                        key: const ValueKey('deck_noResults'),
+                        title: l10n.deck_noResultsTitle,
+                        hint: l10n.deck_noResultsHint,
+                        icon: Icons.search_off,
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: EdgeInsets.fromLTRB(side, 8, side, 96),
+                      sliver: SliverList.builder(
+                        itemCount: words.length,
+                        itemBuilder: (context, i) => StaggeredItem(
+                          animation: _stagger,
+                          index: i,
+                          child: _buildWord(words[i]),
+                        ),
+                      ),
+                    ),
+                ],
               ],
             );
           },
@@ -192,6 +261,38 @@ class _DeckDetailScreenState extends State<DeckDetailScreen>
           onTap: () => _editWord(word),
         ),
       ),
+    );
+  }
+}
+
+/// Nút sắp xếp trên AppBar: A–Z / Z–A theo term.
+class _SortMenu extends StatelessWidget {
+  const _SortMenu({required this.selected, required this.onSelected});
+
+  final _WordSort selected;
+  final ValueChanged<_WordSort> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    PopupMenuItem<_WordSort> item(_WordSort value, String label) =>
+        CheckedPopupMenuItem<_WordSort>(
+          key: ValueKey('deck_sort_${value.name}'),
+          value: value,
+          checked: selected == value,
+          child: Text(label),
+        );
+
+    return PopupMenuButton<_WordSort>(
+      key: const ValueKey('deck_sortMenu'),
+      tooltip: l10n.deck_sortTooltip,
+      icon: const Icon(Icons.sort_by_alpha),
+      onSelected: onSelected,
+      itemBuilder: (_) => [
+        item(_WordSort.az, l10n.deck_sortAZ),
+        item(_WordSort.za, l10n.deck_sortZA),
+      ],
     );
   }
 }
