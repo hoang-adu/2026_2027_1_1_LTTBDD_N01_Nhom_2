@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/animated_count.dart';
-import '../../core/widgets/staggered_item.dart';
+import '../../core/widgets/staggered_list.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/deck_provider.dart';
 import 'statistics_summary.dart';
@@ -18,7 +18,7 @@ class StatisticsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     // watch: dữ liệu đổi thì màn hình tự dựng lại.
     final summary =
         StatisticsSummary.fromProvider(context.watch<DeckProvider>());
@@ -48,7 +48,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Center(
       key: const Key('statistics_empty'),
@@ -85,7 +85,7 @@ class _OverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
@@ -205,7 +205,7 @@ class _ChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
 
@@ -283,7 +283,7 @@ class _DeckBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
 
     final numberStyle = TextStyle(
@@ -405,7 +405,7 @@ class _ProgressSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     return Column(
       key: const Key('statistics_progress_list'),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -418,7 +418,7 @@ class _ProgressSection extends StatelessWidget {
           ),
         ),
         for (var i = 0; i < summary.decks.length; i++)
-          StaggeredItem(
+          StaggeredListItem(
             key: ValueKey(summary.decks[i].id),
             index: i,
             child: _DeckProgressTile(stat: summary.decks[i]),
@@ -435,7 +435,7 @@ class _DeckProgressTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
