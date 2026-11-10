@@ -115,5 +115,16 @@
   "statistics_chartTitle": "Số từ theo bộ",
   "statistics_legendTotal": "Tổng số từ",
   "statistics_progressTitle": "Tiến độ từng bộ",
-  "statistics_deckWords": "Đã thuộc {learned}/{total} từ"
+  "statistics_deckWords": "Đã thuộc {learned}/{total} từ",
+  "about_appName": "Ứng dụng học từ vựng Anh–Việt bằng Flashcard",
+  "about_courseLabel": "Học phần",
+  "about_courseValue": "Lập trình cho thiết bị di động – N01",
+  "about_groupLabel": "Nhóm",
+  "about_groupValue": "Nhóm 7",
+  "about_lecturerLabel": "Giảng viên hướng dẫn",
+  "about_lecturerValue": "ThS. Nguyễn Xuân Quế",
+  "about_universityLabel": "Trường",
+  "about_universityValue": "Đại học Phenikaa",
+  "about_teamTitle": "Thành viên nhóm",
+  "about_studentId": "Mã sinh viên"
 }

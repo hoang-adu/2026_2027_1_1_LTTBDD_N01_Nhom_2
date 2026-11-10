@@ -127,5 +127,16 @@
   "statistics_progressTitle": "Progress by deck",
   "statistics_deckWords": "{learned}/{total} words learned",
   "@statistics_deckWords": { "placeholders": { "learned": { "type": "int" }, "total": { "type": "int" } } },
-  "quiz_confirm": "Confirm"
+  "quiz_confirm": "Confirm",
+  "about_appName": "English–Vietnamese Flashcard Vocabulary App",
+  "about_courseLabel": "Course",
+  "about_courseValue": "Mobile Application Programming – N01",
+  "about_groupLabel": "Group",
+  "about_groupValue": "Group 7",
+  "about_lecturerLabel": "Lecturer",
+  "about_lecturerValue": "ThS. Nguyễn Xuân Quế",
+  "about_universityLabel": "University",
+  "about_universityValue": "Phenikaa University",
+  "about_teamTitle": "Team members",
+  "about_studentId": "Student ID"
 }
