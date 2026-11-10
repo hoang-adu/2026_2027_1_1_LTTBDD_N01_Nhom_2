@@ -109,5 +109,17 @@
   "quiz_wordMeaning": "Meaning: {meaning}",
   "quiz_userAnswer": "Your answer: {answer}",
   "quiz_skippedAnswer": "(Skipped)",
-  "quiz_correctAnswer": "Correct answer: {answer}"
+  "quiz_correctAnswer": "Correct answer: {answer}",
+  "statistics_title": "Statistics",
+  "statistics_emptyTitle": "No statistics yet",
+  "statistics_emptyMessage": "Create a deck and add words to see your learning progress here.",
+  "statistics_totalDecks": "Decks",
+  "statistics_totalWords": "Words",
+  "statistics_learnedWords": "Learned",
+  "statistics_completionRate": "Completion",
+  "statistics_chartTitle": "Words per deck",
+  "statistics_legendTotal": "Total words",
+  "statistics_progressTitle": "Progress by deck",
+  "statistics_deckWords": "{learned}/{total} words learned",
+  "@statistics_deckWords": { "placeholders": { "learned": { "type": "int" }, "total": { "type": "int" } } }
 }

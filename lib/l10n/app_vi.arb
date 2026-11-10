@@ -105,5 +105,16 @@
   "quiz_wordMeaning": "Nghĩa: {meaning}",
   "quiz_userAnswer": "Bạn chọn: {answer}",
   "quiz_skippedAnswer": "(Bỏ qua)",
-  "quiz_correctAnswer": "Đáp án đúng: {answer}"
+  "quiz_correctAnswer": "Đáp án đúng: {answer}",
+  "statistics_title": "Thống kê",
+  "statistics_emptyTitle": "Chưa có số liệu",
+  "statistics_emptyMessage": "Hãy tạo bộ từ và thêm từ để xem tiến độ học tại đây.",
+  "statistics_totalDecks": "Bộ từ",
+  "statistics_totalWords": "Tổng số từ",
+  "statistics_learnedWords": "Đã thuộc",
+  "statistics_completionRate": "Hoàn thành",
+  "statistics_chartTitle": "Số từ theo bộ",
+  "statistics_legendTotal": "Tổng số từ",
+  "statistics_progressTitle": "Tiến độ từng bộ",
+  "statistics_deckWords": "Đã thuộc {learned}/{total} từ"
 }
