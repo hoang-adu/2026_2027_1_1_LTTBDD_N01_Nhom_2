@@ -144,6 +144,12 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Giới thiệu'), findsOneWidget);
+      // Thẻ thành viên nằm cuối danh sách → cuộn xuống cho chắc đã dựng.
+      await tester.scrollUntilVisible(
+        find.text('Nguyễn Tiến Đạt'),
+        200,
+        scrollable: find.byType(Scrollable).last,
+      );
       expect(find.text('Nguyễn Việt Hoàng'), findsOneWidget);
       expect(find.text('Nguyễn Hùng Hải Anh'), findsOneWidget);
       expect(find.text('Nguyễn Tiến Đạt'), findsOneWidget);

@@ -86,7 +86,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(AboutScreen), findsOneWidget);
 
-      await tester.pageBack();
+      // pageBack() tìm tooltip tiếng Anh "Back"; ở tiếng Việt thì bấm thẳng BackButton.
+      await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
       expect(find.byType(AboutScreen), findsNothing);
     });
