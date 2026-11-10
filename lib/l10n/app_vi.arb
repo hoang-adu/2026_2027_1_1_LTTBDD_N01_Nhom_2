@@ -126,5 +126,13 @@
   "about_universityLabel": "Trường",
   "about_universityValue": "Đại học Phenikaa",
   "about_teamTitle": "Thành viên nhóm",
-  "about_studentId": "Mã sinh viên"
+  "about_studentId": "Mã sinh viên",
+  "deck_searchHint": "Tìm theo từ hoặc nghĩa",
+  "deck_searchClear": "Xóa tìm kiếm",
+  "deck_filterAll": "Tất cả",
+  "deck_sortTooltip": "Sắp xếp",
+  "deck_sortAZ": "A–Z",
+  "deck_sortZA": "Z–A",
+  "deck_noResultsTitle": "Không tìm thấy từ phù hợp",
+  "deck_noResultsHint": "Thử từ khóa khác hoặc đổi bộ lọc."
 }
