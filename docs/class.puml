@@ -1,0 +1,355 @@
+@startuml class
+' Biểu đồ lớp — khớp code lib/ (đối chiếu 2026-11-11, commit 61187b5).
+' Không có Profile / History / Favorite (FR16, FR19, FR22 đã loại).
+' Quy ước: - private (_x), + public; {readOnly} = final; <<get>> = getter Dart.
+' Màn hình chỉ ghi các phụ thuộc chính (Provider/Model dùng tới, màn được push).
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam shadowing false
+hide empty members
+
+' =====================================================================
+package "Thư viện ngoài" <<Frame>> {
+  class ChangeNotifier <<Flutter>>
+  class SharedPreferences <<shared_preferences>> {
+    +getString(key) : String?
+    +setString(key, value) : Future<bool>
+    +getBool(key) : bool?
+    +setBool(key, value) : Future<bool>
+  }
+  class FlutterTts <<flutter_tts>>
+}
+
+' =====================================================================
+package "Data – Model (lib/data/models)" {
+  class Word {
+    +id : String {readOnly}
+    +term : String
+    +meaning : String
+    +phonetic : String?
+    +example : String?
+    +isLearned : bool = false
+    +toggleLearned() : void
+    +toJson() : Map<String, dynamic>
+    +{static} fromJson(json : Map<String, dynamic>) : Word
+  }
+
+  class Deck {
+    +id : String {readOnly}
+    +name : String
+    +words : List<Word> {readOnly}
+    +wordCount : int <<get>>
+    +learnedCount : int <<get>>
+    +addWord(w : Word) : void
+    +updateWord(w : Word) : void
+    +removeWord(wordId : String) : void
+    +toJson() : Map<String, dynamic>
+    +{static} fromJson(json : Map<String, dynamic>) : Deck
+  }
+
+  enum WordFilter {
+    all
+    learned
+    notLearned
+  }
+
+  enum QuizType {
+    multipleChoice
+    typing
+  }
+
+  class QuizQuestion {
+    +id : String {readOnly}
+    +word : Word {readOnly}
+    +options : List<String> {readOnly}
+    +correctAnswer : String {readOnly}
+    +type : QuizType {readOnly}
+    +isCorrect(answer : String) : bool
+    +{static} normalize(s : String) : String
+  }
+
+  class QuizResult {
+    +totalQuestions : int {readOnly}
+    +correctAnswers : int {readOnly}
+    +questions : List<QuizQuestion> {readOnly}
+    +userAnswers : Map<String, String> {readOnly}
+    +score : double <<get>>
+    +answerOf(qId : String) : String?
+  }
+}
+
+' =====================================================================
+package "Repository (lib/data/repositories)" {
+  class DeckRepository {
+    -_prefs : SharedPreferences
+    +DeckRepository(prefs : SharedPreferences)
+    +loadDecks() : List<Deck>
+    +saveDecks(decks : List<Deck>) : Future<void>
+  }
+}
+
+' =====================================================================
+package "State – Provider (lib/providers)" {
+  class DeckProvider {
+    -_repo : DeckRepository
+    -_decks : List<Deck>
+    +DeckProvider(repo : DeckRepository)
+    +getDecks() : List<Deck>
+    +getDeckById(id : String) : Deck?
+    +totalLearnedWords : int <<get>>
+    +deckProgress(deckId : String) : double
+    +addDeck(name : String) : Future<bool>
+    +updateDeck(id : String, newName : String) : Future<bool>
+    +deleteDeck(id : String) : Future<void>
+    +addWord(deckId, term, meaning, phonetic?, example?) : Future<bool>
+    +updateWord(deckId : String, word : Word) : Future<bool>
+    +deleteWord(deckId : String, wordId : String) : Future<void>
+    +toggleLearned(deckId : String, wordId : String) : Future<void>
+    +searchWords(deckId : String, keyword : String) : List<Word>
+    +filterWords(words : List<Word>, filter : WordFilter) : List<Word>
+    +sortWords(words : List<Word>, ascending : bool = true) : List<Word>
+    -_persist() : Future<void>
+    -{static} _newId() : String
+  }
+
+  class StudyProvider {
+    -_deckProvider : DeckProvider?
+    -_currentDeck : Deck?
+    -_currentWords : List<Word>
+    -_currentIndex : int
+    -_isFinished : bool
+    +StudyProvider(deckProvider : DeckProvider?)
+    +updateDeckProvider(deckProvider : DeckProvider) : void
+    +currentDeck : Deck? <<get>>
+    +currentWords : List<Word> <<get>>
+    +currentIndex : int <<get>>
+    +currentWord : Word? <<get>>
+    +isFinished : bool <<get>>
+    +startStudy(deckId : String) : bool
+    +goTo(index : int) : void
+    +nextCard() : void
+    +previousCard() : void
+    +toggleLearned() : Future<void>
+  }
+
+  class QuizProvider {
+    -_random : Random
+    -_questions : List<QuizQuestion>
+    -_currentIndex : int
+    -_quizType : QuizType
+    -_userAnswers : Map<String, String>
+    -_isFinished : bool
+    +QuizProvider(random : Random?)
+    +questions : List<QuizQuestion> <<get>>
+    +currentIndex : int <<get>>
+    +quizType : QuizType <<get>>
+    +currentQuestion : QuizQuestion <<get>>
+    +hasNext : bool <<get>>
+    +isFinished : bool <<get>>
+    +userAnswers : Map<String, String> <<get>>
+    +generateQuiz(deck : Deck, type : QuizType) : bool
+    +submitAnswer(answer : String) : void
+    +checkTypingAnswer(answer : String) : bool
+    +nextQuestion() : void
+    +calculateResult() : QuizResult
+    -_pickDistractors(words : List<Word>, correct : String) : List<String>?
+  }
+
+  class LocaleProvider {
+    -_prefs : SharedPreferences
+    -_locale : Locale
+    +LocaleProvider(prefs : SharedPreferences)
+    +currentLocale : Locale <<get>>
+    +changeLocale(l : Locale) : void
+    +toggleLanguage() : void
+  }
+
+  class ThemeProvider {
+    -_prefs : SharedPreferences
+    -_isDarkMode : bool
+    +ThemeProvider(prefs : SharedPreferences)
+    +isDarkMode : bool <<get>>
+    +toggleTheme() : void
+  }
+}
+
+' =====================================================================
+package "Core (lib/core)" {
+  class TtsService <<singleton>> {
+    +{static} instance : TtsService
+    +speechRate : double = 0.45
+    -_engine : FlutterTts?
+    +TtsService(engine : FlutterTts?, speechRate : double)
+    +speak(text : String, lang : String = "en-US") : Future<void>
+    +stop() : Future<void>
+  }
+  class AppTheme {
+    +{static} light() : ThemeData
+    +{static} dark() : ThemeData
+  }
+  class AnimatedCount <<StatelessWidget>>
+  class StaggeredListItem <<StatefulWidget>>
+}
+
+' =====================================================================
+package "Presentation (lib/main.dart, lib/app.dart, lib/features)" {
+  class AppProviders <<StatelessWidget>> {
+    +prefs : SharedPreferences
+  }
+  class FlashcardApp <<StatelessWidget>>
+  class HomeShell <<StatefulWidget>>
+
+  class DeckListScreen <<StatefulWidget>>
+  class DeckDetailScreen <<StatefulWidget>> {
+    +deckId : String
+  }
+  class "WordForm\n(showWordFormDialog + _WordFormDialog)" as WordForm <<Dialog>> {
+    +deckId : String
+    +word : Word?
+  }
+
+  class StudyScreen <<StatefulWidget>> {
+    +deckId : String
+  }
+  class FlashcardWidget <<StatefulWidget>> {
+    +word : Word
+    +onSpeak : VoidCallback
+  }
+
+  class QuizScreen <<StatelessWidget>> {
+    +deckId : String
+  }
+  class QuizPlayScreen <<StatefulWidget>> {
+    +deckId : String
+    +type : QuizType
+  }
+  class QuizResultScreen <<StatelessWidget>> {
+    +result : QuizResult
+    +deckId : String
+  }
+
+  class StatisticsScreen <<StatelessWidget>>
+  class StatisticsSummary {
+    +decks : List<DeckStat>
+    +totalWords : int
+    +totalLearned : int
+    +completionRate : double <<get>>
+    +maxDeckWords : int <<get>>
+    +{static} fromProvider(p : DeckProvider) : StatisticsSummary
+  }
+  class DeckStat {
+    +id : String
+    +name : String
+    +total : int
+    +learned : int
+    +progress : double
+    +percent : int <<get>>
+  }
+
+  class SettingsScreen <<StatelessWidget>>
+  class AboutScreen <<StatelessWidget>>
+}
+
+' =====================================================================
+' Kế thừa
+ChangeNotifier <|-- DeckProvider
+ChangeNotifier <|-- LocaleProvider
+ChangeNotifier <|-- ThemeProvider
+ChangeNotifier <|-- StudyProvider : with (mixin)
+ChangeNotifier <|-- QuizProvider : with (mixin)
+
+' ----- Model -----
+Deck "1" *-- "0..*" Word : words
+QuizQuestion "0..*" --> "1" Word : word
+QuizQuestion --> QuizType : type
+QuizResult "1" o-- "0..*" QuizQuestion : questions
+
+' ----- Repository -----
+DeckRepository --> "1" SharedPreferences : _prefs\n(khóa decks_v1)
+DeckRepository ..> Deck : toJson / fromJson
+
+' ----- Provider -----
+DeckProvider ..> DeckRepository : <<use>>\nloadDecks / saveDecks
+DeckProvider "1" o-- "0..*" Deck : _decks
+DeckProvider ..> Word : <<create>>
+DeckProvider ..> WordFilter
+
+StudyProvider --> "0..1" DeckProvider : _deckProvider\n(ChangeNotifierProxyProvider)
+StudyProvider --> "0..1" Deck : _currentDeck
+
+QuizProvider ..> Deck : generateQuiz(deck, type)
+QuizProvider "1" o-- "0..20" QuizQuestion : _questions
+QuizProvider --> QuizType : _quizType
+QuizProvider ..> QuizResult : <<create>>
+
+LocaleProvider --> SharedPreferences : _prefs\n(app_locale)
+ThemeProvider --> SharedPreferences : _prefs\n(is_dark_mode)
+
+TtsService --> "0..1" FlutterTts : _engine
+
+' ----- Presentation → State -----
+AppProviders ..> DeckRepository : <<create>>
+AppProviders ..> DeckProvider : <<create>>
+AppProviders ..> StudyProvider : <<create>>
+AppProviders ..> QuizProvider : <<create>>
+AppProviders ..> LocaleProvider : <<create>>
+AppProviders ..> ThemeProvider : <<create>>
+AppProviders ..> FlashcardApp : child
+
+FlashcardApp ..> LocaleProvider : watch
+FlashcardApp ..> ThemeProvider : watch
+FlashcardApp ..> AppTheme
+FlashcardApp --> HomeShell : home
+
+HomeShell *-- DeckListScreen : tab Bộ từ
+HomeShell *-- StatisticsScreen : tab Thống kê
+HomeShell *-- SettingsScreen : tab Cài đặt
+
+DeckListScreen ..> DeckProvider
+DeckListScreen ..> DeckDetailScreen : push
+
+DeckDetailScreen ..> DeckProvider
+DeckDetailScreen ..> WordFilter
+DeckDetailScreen ..> WordForm : showWordFormDialog
+DeckDetailScreen ..> StudyScreen : push
+DeckDetailScreen ..> QuizScreen : push
+
+WordForm ..> DeckProvider : addWord / updateWord
+
+StudyScreen ..> StudyProvider : Consumer
+StudyScreen ..> TtsService : speak(term)
+StudyScreen *-- FlashcardWidget
+FlashcardWidget --> Word
+
+QuizScreen ..> DeckProvider
+QuizScreen ..> QuizPlayScreen : push (Hero)
+QuizPlayScreen ..> DeckProvider : getDeckById
+QuizPlayScreen ..> QuizProvider
+QuizPlayScreen ..> QuizResultScreen : pushReplacement
+QuizResultScreen --> QuizResult : result
+QuizResultScreen ..> QuizScreen : Làm lại (pushReplacement)
+QuizResultScreen ..> AnimatedCount
+
+StatisticsScreen ..> StatisticsSummary
+StatisticsScreen ..> AnimatedCount
+StatisticsScreen ..> StaggeredListItem
+StatisticsSummary ..> DeckProvider : fromProvider
+StatisticsSummary "1" *-- "0..*" DeckStat
+
+SettingsScreen ..> LocaleProvider
+SettingsScreen ..> ThemeProvider
+SettingsScreen ..> AboutScreen : push
+AboutScreen ..> StaggeredListItem
+
+note top of DeckProvider
+  Mọi hàm ghi: sửa _decks → _repo.saveDecks → notifyListeners().
+  Trả bool thay vì ném exception.
+end note
+
+note bottom of QuizProvider
+  MC: >= 4 từ và >= 4 nghĩa khác nhau; typing: >= 1 từ.
+  Xáo ngẫu nhiên, tối đa 20 câu (kMaxQuizQuestions).
+end note
+
+@enduml

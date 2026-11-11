@@ -1,0 +1,90 @@
+@startuml usecase
+' Biểu đồ use case tổng thể — theo báo cáo mục 2.3 (Bảng 7, quan hệ 2.3.3), khớp mã nguồn ngày 2026-11-11.
+' 19 use case, 1 actor. UC16 (Profile), UC19 (History), UC22 (Favorite) đã lược bỏ, không vẽ.
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor<<mở rộng>> #F3F7FF
+}
+
+actor "Người dùng" as User
+
+rectangle "Ứng dụng học từ vựng Flashcard Anh–Việt" {
+
+  package "Quản lý bộ từ vựng" {
+    usecase "UC01\nXem danh sách bộ từ vựng" as UC01
+    usecase "UC02\nTạo bộ từ vựng mới" as UC02
+    usecase "UC03\nSửa/xóa bộ từ vựng" as UC03
+  }
+
+  package "Quản lý từ vựng" {
+    usecase "UC04\nXem danh sách từ trong bộ" as UC04
+    usecase "UC05\nThêm từ vựng" as UC05
+    usecase "UC06\nSửa/xóa từ vựng" as UC06
+    usecase "UC14\nTìm kiếm từ vựng" as UC14 <<mở rộng>>
+    usecase "UC15\nLọc và sắp xếp danh sách từ" as UC15 <<mở rộng>>
+  }
+
+  package "Học tập" {
+    usecase "UC07\nHọc bằng flashcard" as UC07
+    usecase "UC08\nĐánh dấu từ đã thuộc / chưa thuộc" as UC08
+    usecase "UC17\nNghe phát âm từ vựng" as UC17 <<mở rộng>>
+  }
+
+  package "Kiểm tra" {
+    usecase "UC09\nLàm bài trắc nghiệm" as UC09
+    usecase "UC18\nLàm bài kiểm tra dạng điền từ" as UC18 <<mở rộng>>
+    usecase "UC10\nXem kết quả kiểm tra" as UC10
+  }
+
+  package "Thống kê và tiện ích" {
+    usecase "UC11\nXem thống kê tiến độ" as UC11
+    usecase "UC20\nXem thống kê bằng biểu đồ" as UC20 <<mở rộng>>
+    usecase "UC12\nĐổi ngôn ngữ giao diện" as UC12
+    usecase "UC13\nXem thông tin nhóm" as UC13
+    usecase "UC21\nChuyển đổi chế độ sáng/tối" as UC21 <<mở rộng>>
+  }
+}
+
+' ----- Actor gọi trực tiếp các use case cơ sở -----
+User --> UC01
+User --> UC02
+User --> UC03
+User --> UC04
+User --> UC05
+User --> UC06
+User --> UC07
+User --> UC09
+User --> UC18
+User --> UC10
+User --> UC11
+User --> UC12
+User --> UC13
+User --> UC20
+User --> UC21
+
+' ----- Include: sinh câu hỏi luôn cần danh sách từ của bộ -----
+UC09 ..> UC04 : <<include>>
+UC18 ..> UC04 : <<include>>
+
+' ----- Extend: hành vi tùy chọn trong màn học -----
+UC08 ..> UC07 : <<extend>>
+UC17 ..> UC07 : <<extend>>
+
+' ----- Extend: thao tác tùy chọn khi xem danh sách từ -----
+UC14 ..> UC04 : <<extend>>
+UC15 ..> UC04 : <<extend>>
+
+note right of UC10
+  UC09 và UC18 khi hoàn thành
+  đều dẫn tới UC10 theo trình tự
+  (nộp bài → màn kết quả).
+end note
+
+note bottom of UC21
+  UC20 và UC21 là use case độc lập,
+  actor gọi trực tiếp.
+end note
+
+@enduml
