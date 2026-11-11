@@ -1,0 +1,32 @@
+@startuml
+|Người dùng|
+start
+:Chọn chế độ Điền từ (Typing);
+
+|Hệ thống|
+:Kiểm tra số lượng từ (Cần >= 1 từ);
+if (Đủ điều kiện?) then (Không)
+  :Hiển thị SnackBar báo không đủ từ;
+  stop
+else (Đủ)
+  :QuizProvider khởi tạo danh sách câu hỏi điền từ;
+  :Mở màn hình QuizPlayScreen với ô nhập liệu (TextField);
+  
+  repeat
+    |Người dùng|
+    :Nhập từ tiếng Anh vào TextField\n(hoặc bấm Bỏ qua / Xác nhận);
+    :Bấm nút tiếp theo / nộp bài;
+    
+    |Hệ thống|
+    :Lưu câu trả lời người dùng vừa gõ;
+    :Kiểm tra còn câu hỏi không?;
+  repeat while (Còn câu hỏi?) is (Có)
+  
+  |Hệ thống|
+  :Tính toán kết quả hoàn thành;
+  :Chuyển sang màn hình QuizResultScreen;
+  |Người dùng|
+  :Xem điểm số tổng kết kèm nhãn "Bạn đã gõ";
+endif
+stop
+@enduml

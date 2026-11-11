@@ -1,0 +1,19 @@
+@startuml
+|Người dùng|
+start
+:Mở màn hình chi tiết bộ từ (DeckDetailScreen);
+:Nhấn nút thêm từ mới (WordForm);
+:Nhập thông tin (term, meaning, phonetic);
+:Nhấn nút xác nhận lưu từ;
+
+|Hệ thống|
+:WordForm kiểm tra tính hợp lệ dữ liệu;
+:DeckProvider gọi addWordToDeck();
+:DeckRepository mã hóa JSON và lưu vào SharedPreferences;
+:Cập nhật trạng thái state trong bộ;
+:Làm mới (refresh) giao diện danh sách từ;
+
+|Người dùng|
+:Nhìn thấy từ mới xuất hiện trong danh sách;
+stop
+@enduml

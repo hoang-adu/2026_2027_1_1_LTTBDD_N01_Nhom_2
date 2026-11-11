@@ -1,0 +1,23 @@
+@startuml
+|Người dùng|
+start
+:Mở chi tiết bộ từ và chọn chế độ học Flashcard;
+
+|Hệ thống|
+:StudyScreen gọi DeckProvider.getDeckById();
+:Tải danh sách từ vựng của bộ từ;
+if (Bộ từ có từ vựng không?) then (Có)
+  |Người dùng|
+  :Xem thẻ flashcard (mặt trước);
+  :Thao tác lật thẻ xem nghĩa (mặt sau);
+  :Bấm chuyển sang thẻ tiếp theo;
+  |Hệ thống|
+  :Cập nhật chỉ số index từ hiện tại;
+else (Không)
+  |Hệ thống|
+  :Hiển thị trạng thái trống (EmptyState);
+  |Người dùng|
+  :Quay lại màn hình trước;
+endif
+stop
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+autonumber
+actor "Người dùng" as User
+participant "DeckDetailScreen" as UI
+participant "DeckProvider" as Provider
+participant "DeckRepository" as Repo
+participant "SharedPreferences" as Prefs
+
+User -> UI: Thực hiện thao tác xóa từ (Swipe / Nút xóa)
+UI -> Provider: removeWordFromDeck(deckId, wordId)
+Provider -> Repo: saveDecks(decks)
+Repo -> Prefs: setString(key, jsonEncode)
+Prefs --> Repo: Lưu thành công
+Repo --> Provider: Cập nhật state bộ từ
+Provider --> UI: Xóa từ khỏi danh sách hiển thị
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+autonumber
+actor "Người dùng" as User
+participant "QuizScreen" as UI1
+participant "QuizPlayScreen" as UI2
+participant "QuizProvider" as Provider
+participant "QuizResultScreen" as UIResult
+
+User -> UI1: Chọn chế độ Trắc nghiệm (Multiple Choice)
+UI1 -> Provider: generateQuiz(deck, QuizType.multipleChoice)
+Provider --> UI1: Khởi tạo danh sách câu hỏi trắc nghiệm
+UI1 -> UI2: Điều hướng sang QuizPlayScreen
+User -> UI2: Chọn đáp án cho câu hỏi hiện tại
+UI2 -> Provider: submitAnswer(userAnswer), nextQuestion()
+Provider --> UI2: Chuyển câu hỏi tiếp theo (hoặc kết thúc)
+UI2 -> UIResult: Chuyển sang QuizResultScreen hiển thị điểm & chi tiết
+@enduml
