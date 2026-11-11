@@ -4,29 +4,28 @@ start
 :Chọn chế độ Điền từ (Typing);
 
 |Hệ thống|
-:Kiểm tra số lượng từ (Cần >= 1 từ);
-if (Đủ điều kiện?) then (Không)
-  :Hiển thị SnackBar báo không đủ từ;
+:QuizScreen kiểm tra số lượng từ (Cần >= 1 từ);
+if (Số lượng từ < 1?) then (Đúng)
+  :Hiển thị SnackBar báo lỗi;
   stop
-else (Đủ)
+else (Đủ điều kiện)
+  :Điều hướng sang QuizPlayScreen;
   :QuizProvider khởi tạo danh sách câu hỏi điền từ;
-  :Mở màn hình QuizPlayScreen với ô nhập liệu (TextField);
   
   repeat
     |Người dùng|
-    :Nhập từ tiếng Anh vào TextField\n(hoặc bấm Bỏ qua / Xác nhận);
-    :Bấm nút tiếp theo / nộp bài;
+    :Nhập text đáp án vào ô TextField\n(Hoặc bấm Bỏ qua / Xác nhận / Enter / Tiếp theo);
     
     |Hệ thống|
-    :Lưu câu trả lời người dùng vừa gõ;
-    :Kiểm tra còn câu hỏi không?;
-  repeat while (Còn câu hỏi?) is (Có)
+    :QuizProvider submitAnswer(userAnswer) & chuyển câu tiếp theo;
+  repeat while (Còn câu hỏi tiếp theo?) is (Còn)
   
   |Hệ thống|
-  :Tính toán kết quả hoàn thành;
-  :Chuyển sang màn hình QuizResultScreen;
+  :Tính toán điểm số hoàn thành (calculateResult);
+  :Điều hướng sang QuizResultScreen;
+  
   |Người dùng|
-  :Xem điểm số tổng kết kèm nhãn "Bạn đã gõ";
+  :Xem kết quả điểm số điền từ;
 endif
 stop
 @enduml
