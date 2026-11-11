@@ -93,7 +93,7 @@ void main() {
       expect(find.text('Thống kê'), findsWidgets);
       await openSettings(tester);
 
-      await tester.tap(find.byKey(const ValueKey('settings_languageDropdown')));
+      await tester.tap(find.byKey(const ValueKey('settings_languageTile')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('English').last);
       await tester.pumpAndSettle();
@@ -122,7 +122,7 @@ void main() {
       await pumpApp(tester, prefs);
       await openSettings(tester);
       await tester.tap(find.byType(SwitchListTile));
-      await tester.tap(find.byKey(const ValueKey('settings_languageDropdown')));
+      await tester.tap(find.byKey(const ValueKey('settings_languageTile')));
       await tester.pumpAndSettle();
       await tester.tap(find.text('English').last);
       await tester.pumpAndSettle();

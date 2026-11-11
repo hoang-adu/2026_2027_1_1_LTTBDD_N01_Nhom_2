@@ -46,6 +46,7 @@ Khi cần dữ liệu trống: gỡ app hoặc xóa dữ liệu app (Settings �
 | Sau khi sửa 4 lỗi ở mục 7 | `No issues found! (ran in 6.1s)` |
 | Sau khi đối chiếu Bảng 17 báo cáo (thêm test vuốt TC05b) | `No issues found! (ran in 6.4s)` |
 | Sau khi sửa tràn ở 568×320 (mục 7, lỗi #5) | `No issues found! (ran in 8.3s)` |
+| Sau khi sửa màn Cài đặt với chữ phóng to (mục 7, lỗi #6) | `No issues found! (ran in 11.3s)` |
 
 ### 4.2 `flutter test`
 
@@ -56,6 +57,7 @@ Khi cần dữ liệu trống: gỡ app hoặc xóa dữ liệu app (Settings �
 | Sau khi sửa 4 lỗi ở mục 7 | 191 | **191** | 0 |
 | Sau khi đối chiếu Bảng 17 báo cáo (thêm 1 test vuốt TC05b) | 192 | **192** | 0 |
 | Sau khi sửa tràn ở 568×320 (thêm `flashcard_overflow_test.dart` + kích thước 568×320 trong `responsive_test.dart`) | 204 | **204** | 0 |
+| Sau khi sửa màn Cài đặt với chữ phóng to (thêm `settings_text_scale_test.dart`) | 218 | **218** | 0 |
 
 9 test lỗi ở lần chạy thứ hai đều nằm trong `test/ui/` mới viết và do lỗi thật trong app (mục 7). Sau khi sửa app, không chỉnh test, toàn bộ 191 test đạt.
 
@@ -68,6 +70,7 @@ Khi cần dữ liệu trống: gỡ app hoặc xóa dữ liệu app (Settings �
 | Sau khi sửa 4 lỗi ở mục 7 | **91,44 %** (1965/2149 dòng, 42 file) — tất cả test đạt |
 | Sau khi đối chiếu Bảng 17 báo cáo | **91,44 %** (1965/2149 dòng, 42 file) — 192/192 test đạt |
 | Sau khi sửa tràn ở 568×320 | **91,47 %** (1974/2158 dòng, 42 file) — 204/204 test đạt |
+| Sau khi sửa màn Cài đặt với chữ phóng to | **91,52 %** (1987/2171 dòng, 42 file) — 218/218 test đạt |
 
 `lib/core/constants.dart`, `data/models/quiz_type.dart` và `data/models/word_filter.dart` không có trong lcov vì chỉ chứa hằng số/enum, không có dòng lệnh chạy được.
 
@@ -138,7 +141,7 @@ Các module **chưa có file test riêng**, chỉ được phủ gián tiếp qu
 
 ## 7. Lỗi do test tự động phát hiện (lần chạy 2026-11-11) — **đã sửa**
 
-Cả 5 lỗi đã được sửa (Hoàng duyệt). Sau khi sửa: `flutter analyze` sạch, 191/191 test đạt (sau đó thêm test TC05b: 192/192 đạt; sau lỗi #5: 204/204 đạt).
+Cả 6 lỗi đã được sửa (Hoàng duyệt). Sau khi sửa: `flutter analyze` sạch, 191/191 test đạt (sau đó thêm test TC05b: 192/192 đạt; sau lỗi #5: 204/204 đạt; sau lỗi #6: 218/218 đạt).
 
 | # | Test lỗi | Hiện tượng | Vị trí trong code | Người phụ trách |
 |---|---|---|---|---|
@@ -147,6 +150,7 @@ Cả 5 lỗi đã được sửa (Hoàng duyệt). Sau khi sửa: `flutter analy
 | 3 | `NF03 (dữ liệu dài)` ở 320x568 và 891x411 (sáng + tối) | Từ/nghĩa/ví dụ dài: thân màn làm bài tràn tới 246 px; mặt sau flashcard tràn 208 px | `quiz_play_screen.dart:182`, `lib/features/study/flashcard_widget.dart:86` (`Column` mặt sau) | Hải Anh |
 | 4 | `TC15d: Làm lại rồi Back → về thẳng chi tiết bộ` | Bấm **Làm lại** dùng `pushReplacement` tạo một `QuizScreen` mới trong khi `QuizScreen` cũ vẫn ở dưới → ngăn xếp có 2 `QuizScreen`, Back lần đầu vẫn ở màn chọn hình thức | `lib/features/quiz/quiz_result_screen.dart` (nút `quiz_retry`) | Hải Anh |
 | 5 | `flashcard_overflow_test.dart`, `NF03 … 568x320` (màn 320×568 xoay ngang) | Mặt trước thẻ tràn 16–80 px (lỗi báo trên emulator: "BOTTOM OVERFLOWED BY 64 PIXELS"); QuizScreen tràn 5 px; QuizResultScreen tràn 79 px; trạng thái rỗng màn Thống kê tràn 40 px | `flashcard_widget.dart`, `quiz_screen.dart`, `quiz_result_screen.dart`, `statistics_screen.dart` (`_EmptyState`) | Hải Anh, Đạt (thống kê) |
+| 6 | `settings_text_scale_test.dart` (320×568, cỡ chữ 1.5× và 2.0×) | "Trailing widget consumes the entire tile width" ở dòng Ngôn ngữ: ô chọn ngôn ngữ đặt ở `trailing` chiếm hết chiều ngang khi chữ phóng to | `lib/features/settings/settings_screen.dart` | Đạt |
 
 Các trường hợp vẫn đạt ngay từ đầu: điện thoại 411×891 và tablet 800×1280 (cả 2 bộ dữ liệu, sáng + tối), cỡ chữ hệ thống 1.3× ở 411×891.
 
@@ -158,6 +162,7 @@ Cách sửa:
 | 2, 3 | `quiz_play_screen.dart`: thẻ câu hỏi + đáp án/ô nhập đưa vào `Expanded(ListView)` cuộn được, bỏ `Spacer`; thanh tiến độ và hàng nút Bỏ qua/Tiếp giữ cố định. `flashcard_widget.dart`: mặt sau bọc `Center` + `SingleChildScrollView` |
 | 4 | `quiz_result_screen.dart`: nút Làm lại dùng `Navigator.pop` (về `QuizScreen` sẵn có) thay cho `pushReplacement` tạo `QuizScreen` mới |
 | 5 | `flashcard_widget.dart`: mỗi mặt thẻ dùng `LayoutBuilder` + `SingleChildScrollView` + `ConstrainedBox(minHeight)` + `Center` → căn giữa khi đủ chỗ, cuộn khi thiếu; giữ nguyên animation lật và constructor. `quiz_screen.dart`: body cuộn được. `quiz_result_screen.dart`: phần điểm + chi tiết cuộn chung, hàng nút cố định. `statistics_screen.dart`: trạng thái rỗng `Center` + `SingleChildScrollView` |
+| 6 | `settings_screen.dart`: dòng Ngôn ngữ hiện ngôn ngữ đang dùng ở dòng phụ; bấm vào mở hộp thoại chọn Tiếng Việt / English (bấm dòng nào cũng đóng hộp thoại). Không còn `DropdownButton` ở `trailing` |
 
 ## 8. Truy vết test case → test tự động
 
