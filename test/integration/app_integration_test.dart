@@ -83,7 +83,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(StudyScreen), findsOneWidget);
       expect(find.byType(FlashcardWidget), findsOneWidget);
-      await tester.tap(find.byIcon(Icons.close));
+      await tester.tap(find.byType(BackButton)); // nút ← trên AppBar
       await tester.pumpAndSettle();
       expect(find.byType(DeckDetailScreen), findsOneWidget);
 

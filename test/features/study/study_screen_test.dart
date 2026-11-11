@@ -1,5 +1,7 @@
 import 'package:flashcard_app/app.dart';
+import 'package:flashcard_app/data/models/word.dart';
 import 'package:flashcard_app/features/study/flashcard_widget.dart';
+import 'package:flashcard_app/l10n/app_localizations.dart';
 import 'package:flashcard_app/features/study/study_screen.dart';
 import 'package:flashcard_app/main.dart';
 import 'package:flashcard_app/providers/deck_provider.dart';
@@ -56,6 +58,30 @@ void main() {
     expect(find.byType(StudyScreen), findsNothing);
   });
 
+  testWidgets('Nút đánh dấu có chữ: Chưa thuộc ↔ Đã thuộc và lưu xuống bộ từ', (
+    tester,
+  ) async {
+    final id = await openStudy(tester, ['apple']);
+    final button = find.byKey(const ValueKey('study_learnedButton'));
+    final deckProvider =
+        tester.element(find.byType(StudyScreen)).read<DeckProvider>();
+
+    expect(find.widgetWithText(OutlinedButton, 'Chưa thuộc'), findsOneWidget);
+    expect(find.byTooltip('Bấm để đánh dấu từ này đã thuộc / chưa thuộc'),
+        findsOneWidget);
+    expect(find.byIcon(Icons.close), findsNothing); // đã bỏ nút ✕ trùng với ←
+
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(FilledButton, 'Đã thuộc'), findsOneWidget);
+    expect(deckProvider.getDeckById(id)!.learnedCount, 1);
+
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(OutlinedButton, 'Chưa thuộc'), findsOneWidget);
+    expect(deckProvider.getDeckById(id)!.learnedCount, 0);
+  });
+
   testWidgets('Vào StudyScreen với bộ rỗng → dialog báo bộ rỗng, Xác nhận thì thoát', (
     tester,
   ) async {
@@ -65,5 +91,35 @@ void main() {
     await tester.tap(find.text('Xác nhận'));
     await tester.pumpAndSettle();
     expect(find.byType(StudyScreen), findsNothing);
+  });
+
+  testWidgets('Lật thẻ: mặt sau có nghĩa, phiên âm, ví dụ (nhãn theo ngôn ngữ en)', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: FlashcardWidget(
+            word: Word(id: 'w', term: 'apple', meaning: 'quả táo', phonetic: '/ˈæp.əl/',
+                example: 'I eat an apple.'),
+            onSpeak: () {},
+          ),
+        ),
+      ),
+    );
+
+    // Mặt trước: chỉ từ tiếng Anh + nút loa
+    expect(find.text('/ˈæp.əl/'), findsNothing);
+
+    await tester.tap(find.text('apple'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('quả táo'), findsOneWidget);
+    expect(find.text('/ˈæp.əl/'), findsOneWidget);
+    expect(find.text('Example: “I eat an apple.”'), findsOneWidget);
+    expect(find.textContaining('Ví dụ'), findsNothing);
   });
 }
