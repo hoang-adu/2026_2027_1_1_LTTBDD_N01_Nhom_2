@@ -146,11 +146,11 @@
   "deck_sortAZ": "A–Z",
   "deck_sortZA": "Z–A",
   "deck_noResultsTitle": "No matching words",
-  "deck_noResultsHint": "Try another keyword or change the filter."
-  "studyEmptyTitle": "Empty Deck",
-  "studyEmptyMessage": "This flashcard deck currently has no vocabulary words.",
-  "dialogConfirm": "Confirm",
-  "studyFlashcardTitle": "Study Flashcard",
-  "studyFinishedMessage": "You have completed the deck!",
-  "studyBack": "Back"
+  "deck_noResultsHint": "Try another keyword or change the filter.",
+  "study_emptyTitle": "Empty deck",
+  "study_confirm": "OK",
+  "study_finished": "You have finished the deck!",
+  "study_back": "Back",
+  "study_next": "Next card",
+  "study_finish": "Finish"
 }
