@@ -187,71 +187,72 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                 backgroundColor: colorScheme.surfaceContainerHighest,
                 valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
               ),
-              const SizedBox(height: 24),
-              Hero(
-                tag: widget.type == QuizType.multipleChoice ? 'quiz_mode_mc' : 'quiz_mode_typing',
-                child: Material(
-                  color: Colors.transparent,
-                  child: Card(
-                    elevation: 3,
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Text(
-                        widget.type == QuizType.multipleChoice
-                            ? question.word.term
-                            : '${question.word.meaning}${question.word.phonetic != null ? ' (${question.word.phonetic})' : ''}',
-                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
+              const SizedBox(height: 16),
+              // Phần giữa cuộn được → không tràn khi xoay ngang / từ dài (NFR05).
+              // Thanh tiến độ và hàng nút dưới luôn cố định.
+              Expanded(
+                // RadioGroup quản lý đáp án đang chọn (thay groupValue/onChanged đã deprecated)
+                child: RadioGroup<String>(
+                  groupValue: _selectedOption,
+                  onChanged: (val) => setState(() => _selectedOption = val),
+                  child: ListView(
+                    padding: const EdgeInsets.only(top: 8),
+                    children: [
+                      Hero(
+                        tag: widget.type == QuizType.multipleChoice ? 'quiz_mode_mc' : 'quiz_mode_typing',
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Card(
+                            elevation: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(24.0),
+                              child: Text(
+                                widget.type == QuizType.multipleChoice
+                                    ? question.word.term
+                                    : '${question.word.meaning}${question.word.phonetic != null ? ' (${question.word.phonetic})' : ''}',
+                                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 24),
+                      if (widget.type == QuizType.multipleChoice)
+                        for (final option in question.options)
+                          Card(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            child: RadioListTile<String>(
+                              title: Text(option, style: const TextStyle(fontSize: 16)),
+                              value: option,
+                            ),
+                          )
+                      else ...[
+                        TextField(
+                          controller: _typingController,
+                          decoration: InputDecoration(
+                            labelText: l10n.quiz_typeInstruction,
+                            border: const OutlineInputBorder(),
+                          ),
+                          autofocus: true,
+                          onSubmitted: (_) => _handleNext(l10n),
+                        ),
+                        const SizedBox(height: 12),
+                        // Nút Xác nhận riêng cho chế độ điền từ
+                        ElevatedButton(
+                          onPressed: () => _handleNext(l10n),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            backgroundColor: colorScheme.secondaryContainer,
+                            foregroundColor: colorScheme.onSecondaryContainer,
+                          ),
+                          child: Text(l10n.quiz_confirm, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-              if (widget.type == QuizType.multipleChoice) ...[
-                Expanded(
-                  // RadioGroup quản lý đáp án đang chọn (thay groupValue/onChanged đã deprecated)
-                  child: RadioGroup<String>(
-                    groupValue: _selectedOption,
-                    onChanged: (val) => setState(() => _selectedOption = val),
-                    child: ListView.builder(
-                      itemCount: question.options.length,
-                      itemBuilder: (context, index) {
-                        final option = question.options[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 6),
-                          child: RadioListTile<String>(
-                            title: Text(option, style: const TextStyle(fontSize: 16)),
-                            value: option,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ] else ...[
-                TextField(
-                  controller: _typingController,
-                  decoration: InputDecoration(
-                    labelText: l10n.quiz_typeInstruction,
-                    border: const OutlineInputBorder(),
-                  ),
-                  autofocus: true,
-                  onSubmitted: (_) => _handleNext(l10n),
-                ),
-                const SizedBox(height: 12),
-                // Thêm nút Xác nhận riêng biệt cho chế độ điền từ theo yêu cầu prompt mục 2
-                ElevatedButton(
-                  onPressed: () => _handleNext(l10n),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: colorScheme.secondaryContainer,
-                    foregroundColor: colorScheme.onSecondaryContainer,
-                  ),
-                  child: Text(l10n.quiz_confirm, style: const TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                const Spacer(),
-              ],
               const SizedBox(height: 16),
               Row(
                 children: [
