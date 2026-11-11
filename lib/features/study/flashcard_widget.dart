@@ -58,60 +58,92 @@ class _FlashcardWidgetState extends State<FlashcardWidget> {
             );
           },
           child: _showFront
-              ? Container(
+              ? _CardFace(
                   key: const ValueKey(true),
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.word.term,
-                        style: Theme.of(context).textTheme.headlineMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      IconButton(
-                        icon: const Icon(Icons.volume_up),
-                        onPressed: widget.onSpeak,
-                      ),
-                    ],
-                  ),
+                  children: [
+                    Text(
+                      widget.word.term,
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    IconButton(
+                      icon: const Icon(Icons.volume_up),
+                      onPressed: widget.onSpeak,
+                    ),
+                  ],
                 )
-              : Container(
+              : _CardFace(
                   key: const ValueKey(false),
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                  children: [
+                    Text(
+                      meaning,
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w500),
+                      textAlign: TextAlign.center,
+                    ),
+                    // Mặt sau: nghĩa, phiên âm, ví dụ (UC07 bước 3 trong báo cáo)
+                    if (phonetic.isNotEmpty) ...[
+                      const SizedBox(height: 12),
                       Text(
-                        meaning,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w500),
+                        phonetic,
+                        style: AppTheme.monoStyle(fontSize: 18),
                         textAlign: TextAlign.center,
                       ),
-                      // Mặt sau: nghĩa, phiên âm, ví dụ (UC07 bước 3 trong báo cáo)
-                      if (phonetic.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        Text(
-                          phonetic,
-                          style: AppTheme.monoStyle(fontSize: 18),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                      const SizedBox(height: 16),
-                      if (example.isNotEmpty)
-                        Text(
-                          AppLocalizations.of(context).study_example(example),
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          textAlign: TextAlign.center,
-                        ),
                     ],
-                  ),
+                    if (example.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        AppLocalizations.of(context).study_example(example),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ],
                 ),
         ),
+      ),
+    );
+  }
+}
+
+/// Nội dung một mặt thẻ: căn giữa khi đủ chỗ, cuộn được khi không đủ
+/// (vd. màn 320x568 xoay ngang, nghĩa/ví dụ dài) – NFR05.
+class _CardFace extends StatelessWidget {
+  const _CardFace({super.key, required this.children});
+
+  final List<Widget> children;
+
+  static const EdgeInsets _padding = EdgeInsets.all(24.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Chiều cao tối thiểu = chiều cao thẻ để còn căn giữa được;
+          // khung không giới hạn chiều cao thì bỏ qua.
+          final minHeight = constraints.hasBoundedHeight
+              ? constraints.maxHeight
+              : 0.0;
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: minHeight),
+              child: Padding(
+                padding: _padding,
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: children,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
