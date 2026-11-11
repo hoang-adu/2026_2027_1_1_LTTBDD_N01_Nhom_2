@@ -131,10 +131,10 @@ Các quy tắc dưới đây làm rõ yêu cầu ở mục 2.1–2.5 theo đúng
 | Mã | Hiện thực |
 |---|---|
 | NFR01 | Material 3 (`AppTheme.light/dark` từ một màu gốc); font Be Vietnam Pro, IBM Plex Mono nhúng trong `assets/fonts`; màn trống có hướng dẫn. |
-| NFR02 | Card, AlertDialog, Dismissible, SearchBar, ChoiceChip, PopupMenuButton, SwitchListTile, DropdownButton, PageView, RadioListTile, LinearProgressIndicator, BarChart; hiệu ứng lật thẻ, Hero, đếm số, danh sách so le, FAB thu gọn khi cuộn, combo x2/x3. |
+| NFR02 | Card, AlertDialog, Dismissible, SearchBar, ChoiceChip, PopupMenuButton, SwitchListTile, SimpleDialog, PageView, RadioListTile, LinearProgressIndicator, BarChart; hiệu ứng lật thẻ, Hero, đếm số, danh sách so le, FAB thu gọn khi cuộn, combo x2/x3. |
 | NFR03 | Dữ liệu giữ trong bộ nhớ của Provider, chỉ ghi xuống máy khi có thay đổi; danh sách dựng bằng builder; `IndexedStack` giữ trạng thái các tab. |
 | NFR04 | Mọi chuỗi giao diện lấy từ `AppLocalizations` (`app_en.arb`, `app_vi.arb`); `FlashcardApp` lắng nghe `LocaleProvider` nên đổi ngay. |
-| NFR05 | Bố cục co giãn; màn hình rộng giới hạn nội dung 720 px và căn giữa; có widget test ở kích thước 320×568. |
+| NFR05 | Bố cục co giãn; màn hình rộng giới hạn nội dung 720 px và căn giữa; các màn có nội dung dài cuộn được khi thiếu chỗ; widget test ở 5 kích thước (320×568, 411×891, 800×1280, xoay ngang 891×411 và 568×320), chế độ sáng/tối, cỡ chữ hệ thống tới 2.0×. |
 | NFR06 | Chỉ dùng package Flutter hỗ trợ cả Android và iOS. |
 | NFR07 | Provider trả `bool` thay vì ném lỗi; form hiển thị thông báo lỗi; dữ liệu lưu hỏng thì đọc ra danh sách rỗng; lỗi TTS bị bỏ qua; không đủ điều kiện làm bài thì hiện thông báo. |
 | NFR08 | Mỗi thao tác ghi đều lưu ngay xuống `SharedPreferences`; dữ liệu còn nguyên cả khi mở lại ứng dụng. |
