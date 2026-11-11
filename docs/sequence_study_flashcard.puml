@@ -1,0 +1,14 @@
+@startuml
+autonumber
+actor "Người dùng" as User
+participant "StudyScreen" as UI
+participant "DeckProvider" as Provider
+participant "Deck" as Model
+
+User -> UI: Mở màn hình học Flashcard (study_screen.dart)
+UI -> Provider: getDeckById(deckId)
+Provider --> UI: Trả về đối tượng Deck kèm danh sách Word
+UI -> Model: Hiển thị từ vựng dạng Flashcard (flashcard_widget.dart)
+User -> UI: Lật thẻ / Chuyển thẻ tiếp theo
+UI --> User: Cập nhật trạng thái hiển thị từ vựng
+@enduml

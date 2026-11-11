@@ -1,0 +1,11 @@
+@startuml
+autonumber
+actor "Người dùng" as User
+participant "DeckDetailScreen" as UI
+participant "WordListToolbar" as Toolbar
+
+User -> UI: Nhập từ khóa tìm kiếm vào thanh Toolbar
+UI -> Toolbar: Lọc danh sách từ vựng hiện tại trong bộ (Memory filtering)
+Toolbar --> UI: Trả về danh sách từ khớp với từ khóa
+UI --> User: Hiển thị kết quả tìm kiếm ngay trên màn hình
+@enduml

@@ -1,0 +1,19 @@
+@startuml
+autonumber
+actor "Người dùng" as User
+participant "DeckListScreen" as UI
+participant "DeckDialogs" as Dialog
+participant "DeckProvider" as Provider
+participant "DeckRepository" as Repo
+participant "SharedPreferences" as Prefs
+
+User -> UI: Nhấn nút tạo bộ từ mới (FAB)
+UI -> Dialog: Hiển thị hộp thoại nhập tên bộ từ
+User -> Dialog: Nhập thông tin & Xác nhận
+Dialog -> Provider: addDeck(newDeck)
+Provider -> Repo: saveDecks(decks)
+Repo -> Prefs:setString(key, jsonEncode)
+Prefs --> Repo: Lưu thành công
+Repo --> Provider: Cập nhật trạng thái
+Provider --> UI: Refresh giao diện danh sách bộ từ
+@enduml
