@@ -4,14 +4,30 @@ actor "Người dùng" as User
 participant "QuizScreen" as UI1
 participant "QuizPlayScreen" as UI2
 participant "QuizProvider" as Provider
+participant "DeckProvider" as DeckProvider
 participant "QuizResultScreen" as UIResult
 
 User -> UI1: Chọn chế độ Trắc nghiệm (Multiple Choice)
-UI1 -> Provider: generateQuiz(deck, QuizType.multipleChoice)
-Provider --> UI1: Khởi tạo danh sách câu hỏi trắc nghiệm
-UI1 -> UI2: Điều hướng sang QuizPlayScreen
-User -> UI2: Chọn đáp án cho câu hỏi hiện tại
-UI2 -> Provider: submitAnswer(userAnswer), nextQuestion()
-Provider --> UI2: Chuyển câu hỏi tiếp theo (hoặc kết thúc)
-UI2 -> UIResult: Chuyển sang QuizResultScreen hiển thị điểm & chi tiết
+UI1 -> UI1: Kiểm tra số lượng từ (Cần >= 4 từ)
+alt Không đủ 4 từ
+    UI1 --> User: Hiển thị SnackBar báo lỗi & Chặn
+else Đủ điều kiện
+    UI1 -> UI2: Điều hướng sang QuizPlayScreen
+    UI2 -> Provider: getDeckById & generateQuiz(QuizType.multipleChoice)
+    alt Khởi tạo thất bại / Lỗi
+        Provider --> UI2: Trả về false
+        UI2 --> User: Pop màn hình
+    else Thành công
+        Provider --> UI2: Khởi tạo câu hỏi trắc nghiệm
+        loop Vòng lặp câu hỏi
+            User -> UI2: Chọn đáp án hoặc bấm "Bỏ qua"
+            UI2 -> Provider: submitAnswer(userAnswer) / submitAnswer('')
+            Provider -> Provider: nextQuestion()
+        end
+        Provider -> Provider: calculateResult()
+        Provider --> UI2: Hoàn thành bài quiz
+        UI2 -> UIResult: pushReplacement sang QuizResultScreen
+        UIResult --> User: Hiển thị điểm số kết quả
+    end
+end
 @enduml
