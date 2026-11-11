@@ -9,7 +9,7 @@ void main() {
   Future<void> switchToEnglish(WidgetTester tester) async {
     await tester.tap(find.byIcon(Icons.settings_outlined));
     await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const ValueKey('settings_languageDropdown')));
+    await tester.tap(find.byKey(const ValueKey('settings_languageTile')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('English').last);
     await tester.pumpAndSettle();

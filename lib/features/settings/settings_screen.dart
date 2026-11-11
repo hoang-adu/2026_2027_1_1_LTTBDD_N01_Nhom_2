@@ -29,30 +29,18 @@ class SettingsScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                // Mục Ngôn ngữ
+                // Mục Ngôn ngữ: ngôn ngữ hiện tại ở dòng phụ, bấm để chọn.
+                // Không đặt Dropdown ở trailing vì chữ phóng to (≥ 1.5x)
+                // trên màn 320dp sẽ chiếm hết chiều ngang dòng (NFR05).
                 ListTile(
+                  key: const ValueKey('settings_languageTile'),
                   leading: const Icon(Icons.language),
                   title: Text(l10n.settings_language),
-                  trailing: DropdownButton<Locale>(
-                    value: localeProvider.currentLocale,
-                    underline: const SizedBox(),
-                    key: const ValueKey('settings_languageDropdown'),
-                    items: [
-                      DropdownMenuItem(
-                        value: const Locale('vi'),
-                        child: Text(l10n.settings_langVi),
-                      ),
-                      DropdownMenuItem(
-                        value: const Locale('en'),
-                        child: Text(l10n.settings_langEn),
-                      ),
-                    ],
-                    onChanged: (Locale? newLocale) {
-                      if (newLocale != null) {
-                        localeProvider.changeLocale(newLocale);
-                      }
-                    },
+                  subtitle: Text(
+                    _languageName(l10n, localeProvider.currentLocale),
                   ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showLanguageDialog(context, localeProvider),
                 ),
                 const Divider(height: 1),
                 // Mục Giao diện (Dark Mode)
@@ -88,6 +76,41 @@ class SettingsScreen extends StatelessWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  static const List<Locale> _locales = [Locale('vi'), Locale('en')];
+
+  static String _languageName(AppLocalizations l10n, Locale locale) =>
+      locale.languageCode == 'en' ? l10n.settings_langEn : l10n.settings_langVi;
+
+  /// Hộp thoại chọn ngôn ngữ; bấm một dòng (kể cả dòng đang chọn) thì
+  /// đóng hộp thoại và đổi ngay.
+  void _showLanguageDialog(BuildContext context, LocaleProvider provider) {
+    final l10n = AppLocalizations.of(context);
+    final current = provider.currentLocale.languageCode;
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => SimpleDialog(
+        title: Text(l10n.settings_language),
+        children: [
+          for (final locale in _locales)
+            ListTile(
+              key: ValueKey('settings_lang_${locale.languageCode}'),
+              leading: Icon(
+                locale.languageCode == current
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+              ),
+              title: Text(_languageName(l10n, locale)),
+              selected: locale.languageCode == current,
+              onTap: () {
+                provider.changeLocale(locale);
+                Navigator.pop(dialogContext);
+              },
+            ),
         ],
       ),
     );
