@@ -328,7 +328,7 @@ QuizPlayScreen ..> DeckProvider : getDeckById
 QuizPlayScreen ..> QuizProvider
 QuizPlayScreen ..> QuizResultScreen : pushReplacement
 QuizResultScreen --> QuizResult : result
-QuizResultScreen ..> QuizScreen : Làm lại (pushReplacement)
+QuizResultScreen ..> QuizScreen : Làm lại (pop)
 QuizResultScreen ..> AnimatedCount
 
 StatisticsScreen ..> StatisticsSummary
