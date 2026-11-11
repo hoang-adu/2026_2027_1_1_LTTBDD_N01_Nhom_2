@@ -1,0 +1,46 @@
+@startuml architecture
+' Sơ đồ kiến trúc tổng thể 4 tầng (Hình 6 trong báo cáo) — khớp mã nguồn ngày 2026-11-11.
+' Không có Profile / History / Favorite (FR16, FR19, FR22 đã loại).
+!pragma layout smetana
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  RoundCorner 12
+}
+skinparam ArrowColor #555555
+
+rectangle "Tầng Presentation (Screen / Widget)" as P #DAE8FC {
+  rectangle "DeckListScreen" as P1 #FFFFFF
+  rectangle "DeckDetailScreen\n+ WordForm" as P2 #FFFFFF
+  rectangle "StudyScreen\n+ FlashcardWidget" as P3 #FFFFFF
+  rectangle "QuizScreen" as P4 #FFFFFF
+  rectangle "QuizPlayScreen" as P5 #FFFFFF
+  rectangle "QuizResultScreen" as P6 #FFFFFF
+  rectangle "StatisticsScreen" as P7 #FFFFFF
+  rectangle "SettingsScreen" as P8 #FFFFFF
+  rectangle "AboutScreen" as P9 #FFFFFF
+}
+
+rectangle "Tầng State / Logic (Provider – ChangeNotifier)" as S #D5E8D4 {
+  rectangle "DeckProvider" as S1 #FFFFFF
+  rectangle "StudyProvider" as S2 #FFFFFF
+  rectangle "QuizProvider" as S3 #FFFFFF
+  rectangle "LocaleProvider" as S4 #FFFFFF
+  rectangle "ThemeProvider" as S5 #FFFFFF
+  rectangle "TtsService\n(service thường)" as S6 #F5F5F5
+}
+
+rectangle "Tầng Repository" as R #E1D5E7 {
+  rectangle "DeckRepository\n(Model <-> JSON)" as R1 #FFFFFF
+}
+
+rectangle "Tầng Data" as D #FFF2CC {
+  rectangle "Model: Deck, Word, WordFilter,\nQuizType, QuizQuestion, QuizResult" as D1 #FFFFFF
+  rectangle "SharedPreferences\n(decks_v1, app_locale, is_dark_mode)" as D2 #FFFFFF
+}
+
+P -down-> S : gọi hàm (context.read)\n<- notifyListeners (watch / Consumer)
+S -down-> R : loadDecks / saveDecks
+R -down-> D : đọc / ghi JSON
+S4 ..> D2 : lưu ngôn ngữ
+S5 ..> D2 : lưu chế độ tối
+@enduml

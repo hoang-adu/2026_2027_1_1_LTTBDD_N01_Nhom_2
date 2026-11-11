@@ -131,13 +131,13 @@ Các module **chưa có file test riêng**, chỉ được phủ gián tiếp qu
 
 ## 6. Bảng test case phi chức năng
 
-> NF01–NF03 tương ứng **Bảng 18 – Bảng các trường hợp kiểm thử phi chức năng** đã thêm vào báo cáo (bản `BaoCao_Flashcard_LTTBDD_3thanhvien_v3.docx`, mục 4.2, ngay sau Bảng 17). NF01–NF03 chưa chạy tay nên cột KQ (ở đây và trong Bảng 18) vẫn để trống.
+> NF01–NF03 tương ứng **Bảng 18 – Bảng các trường hợp kiểm thử phi chức năng** đã thêm vào báo cáo (bản `BaoCao_Flashcard_LTTBDD_3thanhvien_v3.docx`, mục 4.2, ngay sau Bảng 17). Cột KQ thực tế đã được điền theo kết quả nhóm chạy tay: cả 3 case đều **Đạt**, khớp với Bảng 18.
 
 | Mã | Chức năng | Dữ liệu / thao tác | Kết quả mong đợi | KQ thực tế |
 |---|---|---|---|---|
-| NF01 | Dữ liệu còn sau khi thoát app (NFR08) | Tạo bộ `Động vật`, thêm `cat`, `dog`, đánh dấu `cat` đã thuộc, đổi tên một bộ, xóa một bộ và một từ → vuốt tắt app khỏi đa nhiệm → mở lại | Mọi thay đổi còn nguyên: bộ, từ, tên mới, trạng thái “Đã thuộc 1/2”; bộ/từ đã xóa không quay lại; ngôn ngữ và dark mode giữ như trước | |
-| NF02 | Không crash khi nhập sai (NFR07) | (a) Tên bộ chứa emoji/ký tự đặc biệt `🍎 <Fruits> & "Quả" '; DROP TABLE`; (b) dán chuỗi 200 ký tự vào tên bộ; (c) Từ chỉ toàn khoảng trắng; (d) bấm **Lưu** liên tiếp thật nhanh; (e) trong quiz: bấm Tiếp khi chưa chọn, gõ toàn khoảng trắng; (f) bấm loa 🔊 trên máy không có TTS | Không lần nào app bị văng; (a) lưu và hiện đúng chuỗi; (b) ô tên chỉ nhận tối đa 60 ký tự; (c) báo lỗi ô Từ; (d) chỉ thêm 1 từ; (e) tính là sai; (f) không có gì xảy ra hoặc đọc bình thường | |
-| NF03 | Hiển thị đúng ở ≥ 3 kích thước màn hình (NFR05) | Lặp lại TC05, TC08, TC10 và 3 tab trên: điện thoại nhỏ (≈ 320×568 dp), điện thoại thường (≈ 411×891 dp), tablet (≈ 800×1280 dp), thêm điện thoại xoay ngang; làm ở cả chế độ sáng và tối | Không có vạch vàng–đen báo tràn, không bị cắt chữ/nút; nội dung tablet căn giữa, không kéo giãn quá rộng; mọi nút đều bấm được | |
+| NF01 | Dữ liệu còn sau khi thoát app (NFR08) | Tạo bộ `Động vật`, thêm `cat`, `dog`, đánh dấu `cat` đã thuộc, đổi tên một bộ, xóa một bộ và một từ → vuốt tắt app khỏi đa nhiệm → mở lại | Mọi thay đổi còn nguyên: bộ, từ, tên mới, trạng thái “Đã thuộc 1/2”; bộ/từ đã xóa không quay lại; ngôn ngữ và dark mode giữ như trước | Đạt |
+| NF02 | Không crash khi nhập sai (NFR07) | (a) Tên bộ chứa emoji/ký tự đặc biệt `🍎 <Fruits> & "Quả" '; DROP TABLE`; (b) dán chuỗi 200 ký tự vào tên bộ; (c) Từ chỉ toàn khoảng trắng; (d) bấm **Lưu** liên tiếp thật nhanh; (e) trong quiz: bấm Tiếp khi chưa chọn, gõ toàn khoảng trắng; (f) bấm loa 🔊 trên máy không có TTS | Không lần nào app bị văng; (a) lưu và hiện đúng chuỗi; (b) ô tên chỉ nhận tối đa 60 ký tự; (c) báo lỗi ô Từ; (d) chỉ thêm 1 từ; (e) tính là sai; (f) không có gì xảy ra hoặc đọc bình thường | Đạt |
+| NF03 | Hiển thị đúng ở ≥ 3 kích thước màn hình (NFR05) | Lặp lại TC05, TC08, TC10 và 3 tab trên: điện thoại nhỏ (≈ 320×568 dp), điện thoại thường (≈ 411×891 dp), tablet (≈ 800×1280 dp), thêm điện thoại xoay ngang; làm ở cả chế độ sáng và tối | Không có vạch vàng–đen báo tràn, không bị cắt chữ/nút; nội dung tablet căn giữa, không kéo giãn quá rộng; mọi nút đều bấm được | Đạt |
 
 ## 7. Lỗi do test tự động phát hiện (lần chạy 2026-11-11) — **đã sửa**
 

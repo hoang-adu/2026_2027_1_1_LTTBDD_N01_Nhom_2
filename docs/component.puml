@@ -1,0 +1,41 @@
+@startuml component
+' Biểu đồ thành phần (Hình 7 trong báo cáo) — khớp mã nguồn ngày 2026-11-11.
+' Không có Profile / History / Favorite (FR16, FR19, FR22 đã loại).
+!pragma layout smetana
+skinparam componentStyle rectangle
+skinparam ArrowColor #555555
+
+component "MaterialApp\n(FlashcardApp – gốc ứng dụng)" as App #F5F5F5
+
+component "Deck Module\n(DeckListScreen, DeckDetailScreen,\nDeckProvider)" as Deck #D5E8D4
+component "Word Module\n(WordForm, tìm / lọc / sắp xếp)" as Word #DAE8FC
+component "Study Module\n(StudyScreen, FlashcardWidget,\nStudyProvider)" as Study #DAE8FC
+component "Quiz Module\n(QuizScreen, QuizPlayScreen,\nQuizResultScreen, QuizProvider)" as Quiz #DAE8FC
+component "Statistics Module\n(StatisticsScreen)" as Stats #DAE8FC
+component "Settings / Localization\n(SettingsScreen, LocaleProvider, .arb)" as Settings #E1D5E7
+component "Theme Module\n(ThemeProvider, AppTheme)" as Theme #E1D5E7
+component "About Module\n(AboutScreen)" as About #E1D5E7
+
+component "DeckRepository" as Repo #E1D5E7
+component "Shared / Common\n(Model, widget dùng chung, TtsService)" as Common #FFE6CC
+database "SharedPreferences\n(lưu trữ cục bộ)" as Prefs #FFF2CC
+
+Word ..> Deck : <<use>>
+Study ..> Deck : <<use>>
+Quiz ..> Deck : <<use>>
+Stats ..> Deck : <<use>>
+Deck ..> Repo : <<use>>
+Repo ..> Prefs : đọc / ghi JSON
+Settings ..> Prefs : app_locale
+Theme ..> Prefs : is_dark_mode
+App ..> Settings : ngôn ngữ
+App ..> Theme : theme sáng / tối
+Deck ..> Common
+Study ..> Common : TtsService
+Quiz ..> Common
+
+note bottom of About
+  Màn hình tĩnh, không phụ thuộc
+  module nào khác.
+end note
+@enduml
