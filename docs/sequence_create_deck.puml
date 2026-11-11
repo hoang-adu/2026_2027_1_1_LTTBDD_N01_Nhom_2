@@ -7,18 +7,24 @@ participant "DeckProvider" as Provider
 participant "DeckRepository" as Repo
 participant "SharedPreferences" as Prefs
 
-User -> UI: Nhấn nút FAB (_createDeck)
-UI -> Dialog: Hiển thị showDeckNameDialog
-User -> Dialog: Nhập tên bộ từ & Bấm Xác nhận (_submit)
-alt Tên bộ từ trống
-    Dialog --> User: Báo lỗi / Trả về false (Không tạo)
+User -> UI: Bấm FAB "Tạo bộ mới"
+UI -> UI: _createDeck()
+UI -> Dialog: showDeckNameDialog(onSubmit: addDeck)
+User -> Dialog: Nhập tên + bấm Tạo
+Dialog -> Dialog: _submit()
+Dialog -> Provider: addDeck(name)
+alt Tên trống sau trim
+    Provider --> Dialog: false
+    Dialog --> User: errorText deck_nameEmpty, giữ dialog
 else Tên hợp lệ
-    Dialog -> Provider: addDeck(String name)
+    Provider -> Provider: _decks.add(Deck(id, name))
     Provider -> Repo: saveDecks(decks)
     Repo -> Prefs: setString('decks_v1', jsonEncode)
-    Prefs --> Repo: Lưu thành công
+    Prefs --> Repo: true
     Repo --> Provider: Hoàn tất
-    Provider --> Provider: notifyListeners()
-    Provider --> UI: Hiển thị bộ từ mới trên danh sách
+    Provider -> Provider: notifyListeners()
+    Provider --> Dialog: true
+    Dialog -> UI: Navigator.pop
+    UI --> User: DeckCard mới xuất hiện trong danh sách
 end
 @enduml

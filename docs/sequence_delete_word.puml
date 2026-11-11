@@ -2,21 +2,30 @@
 autonumber
 actor "Người dùng" as User
 participant "DeckDetailScreen" as UI
-participant "ConfirmDialog" as Dialog
+participant "showConfirmDeleteDialog" as Dialog
 participant "DeckProvider" as Provider
 participant "Deck" as Model
 participant "DeckRepository" as Repo
 participant "SharedPreferences" as Prefs
 
-User -> UI: Vuốt Dismissible để xóa từ / Nhấn nút xóa
-UI -> Dialog: Hiển thị showConfirmDeleteDialog xác nhận
-User -> Dialog: Xác nhận đồng ý xóa
-Dialog -> Provider: deleteWord(deckId, wordId)
-Provider -> Model: Deck.removeWord(wordId)
-Provider -> Repo: saveDecks(decks)
-Repo -> Prefs: setString('decks_v1', jsonEncode)
-Prefs --> Repo: Lưu thành công
-Repo --> Provider: Hoàn tất
-Provider --> Provider: notifyListeners()
-Provider --> UI: Xóa từ khỏi UI & Hiển thị SnackBar (word_deleted)
+User -> UI: Vuốt từ sang trái (Dismissible)
+UI -> UI: confirmDismiss → _confirmDeleteWord(word)
+UI -> Dialog: showConfirmDeleteDialog(word_deleteTitle, word_deleteMessage)
+alt Người dùng bấm Hủy
+    User -> Dialog: Hủy
+    Dialog --> UI: false → từ trượt về chỗ cũ
+else Người dùng bấm Xóa
+    User -> Dialog: Xóa
+    Dialog --> UI: true
+    UI -> UI: onDismissed → _deleteWord(word)
+    UI -> Provider: deleteWord(deckId, wordId)
+    Provider -> Model: removeWord(wordId)
+    Provider -> Repo: saveDecks(decks)
+    Repo -> Prefs: setString('decks_v1', jsonEncode)
+    Prefs --> Repo: true
+    Repo --> Provider: Hoàn tất
+    Provider -> Provider: notifyListeners()
+    Provider --> UI: Rebuild danh sách từ
+    UI --> User: SnackBar word_deleted(term)
+end
 @enduml

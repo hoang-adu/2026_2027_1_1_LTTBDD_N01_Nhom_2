@@ -1,14 +1,30 @@
 @startuml
 autonumber
 actor "Người dùng" as User
+participant "WordListToolbar\n(SearchBar)" as Toolbar
 participant "DeckDetailScreen" as UI
-participant "WordListToolbar" as Toolbar
 participant "DeckProvider" as Provider
 
-User -> UI: Nhập từ khóa tìm kiếm vào thanh Toolbar
-UI -> Toolbar: onQueryChanged(keyword)
-Toolbar -> Toolbar: setState() cập nhật từ khóa
-UI -> UI: _visibleWords() gọi DeckProvider.searchWords / filterWords / sortWords
-Toolbar --> UI: Lọc danh sách từ vựng hiện có trong memory (Không gọi Repository)
-UI --> User: Hiển thị kết quả tìm kiếm ngay lập tức trên màn hình
+note over UI, Provider
+  Tìm kiếm chỉ lọc dữ liệu trong bộ nhớ,
+  không gọi DeckRepository / SharedPreferences.
+end note
+
+User -> Toolbar: Gõ từ khóa
+Toolbar -> UI: onQueryChanged(keyword)
+UI -> UI: _onQueryChanged → setState(_query = keyword)
+UI -> UI: build() → _visibleWords(provider)
+UI -> Provider: searchWords(deckId, _query)
+Provider --> UI: List<Word> khớp term HOẶC meaning (không phân biệt hoa/thường)
+UI -> Provider: filterWords(words, _filter)
+Provider --> UI: List<Word> theo bộ lọc
+opt Đã chọn sắp xếp A–Z / Z–A
+    UI -> Provider: sortWords(words, ascending: ...)
+    Provider --> UI: List<Word> đã sắp xếp
+end
+alt Danh sách rỗng
+    UI --> User: EmptyState deck_noResultsTitle
+else Có kết quả
+    UI --> User: Hiển thị danh sách WordTile
+end
 @enduml

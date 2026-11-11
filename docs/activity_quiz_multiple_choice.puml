@@ -1,32 +1,40 @@
 @startuml
 |Người dùng|
 start
-:Chọn chế độ Trắc nghiệm (Multiple Choice);
+:Mở QuizScreen, chọn "Trắc nghiệm";
 
 |Hệ thống|
-:QuizScreen kiểm tra điều kiện (Cần >= 4 từ);
-if (Số lượng từ < 4?) then (Đúng)
-  :Hiển thị SnackBar cảnh báo thiếu từ;
+:QuizScreen kiểm tra số từ của bộ (cần >= 4 từ);
+if (Số từ < 4?) then (Đúng)
+  :SnackBar quiz_notEnoughWordsMc\n(vẫn ở QuizScreen);
   stop
-else (Đủ điều kiện)
-  :Điều hướng sang QuizPlayScreen;
-  :QuizProvider sinh ngẫu nhiên danh sách câu hỏi trắc nghiệm;
-  
-  repeat
+else (Đủ 4 từ)
+  :Navigator.push QuizPlayScreen;
+  :QuizProvider.generateQuiz(deck, multipleChoice)\nxáo từ, tối đa 20 câu, 1 đúng + 3 nghĩa nhiễu;
+  if (Sinh câu hỏi thành công?) then (Không - bộ thiếu 3 nghĩa khác nhau)
+    :Navigator.pop về QuizScreen;
+    stop
+  else (Có)
+    repeat
+      |Người dùng|
+      :Đọc từ tiếng Anh, chọn 1 nghĩa tiếng Việt;
+      if (Thao tác?) then (Bỏ qua)
+        |Hệ thống|
+        :submitAnswer('') → tính sai, reset combo;
+      else (Câu tiếp theo / Nộp bài)
+        |Hệ thống|
+        :submitAnswer(đáp án đã chọn);
+        :Đúng liên tiếp >= 2 → hiện combo x2 / x3;
+      endif
+      :nextQuestion();
+    repeat while (Còn câu hỏi?) is (Còn)
+    ->Hết;
+    :calculateResult() → QuizResult;
+    :pushReplacement sang QuizResultScreen;
+
     |Người dùng|
-    :Đọc câu hỏi và chọn 1 đáp án (hoặc bấm Bỏ qua);
-    :Bấm nút "Tiếp theo" / Nộp câu trả lời;
-    
-    |Hệ thống|
-    :QuizProvider ghi nhận kết quả (submitAnswer) & chuyển câu hỏi tiếp theo;
-  repeat while (Còn câu hỏi tiếp theo?) is (Còn)
-  
-  |Hệ thống|
-  :Tính toán điểm số kết quả (calculateResult);
-  :Điều hướng thay thế sang QuizResultScreen (pushReplacement);
-  
-  |Người dùng|
-  :Xem điểm số tổng kết bài trắc nghiệm;
+    :Xem điểm % và chi tiết đúng/sai từng câu;
+  endif
 endif
 stop
 @enduml

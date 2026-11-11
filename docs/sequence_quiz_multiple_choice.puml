@@ -3,31 +3,39 @@ autonumber
 actor "Người dùng" as User
 participant "QuizScreen" as UI1
 participant "QuizPlayScreen" as UI2
-participant "QuizProvider" as Provider
 participant "DeckProvider" as DeckProvider
+participant "QuizProvider" as Quiz
 participant "QuizResultScreen" as UIResult
 
-User -> UI1: Chọn chế độ Trắc nghiệm (Multiple Choice)
-UI1 -> UI1: Kiểm tra số lượng từ (Cần >= 4 từ)
-alt Không đủ 4 từ
-    UI1 --> User: Hiển thị SnackBar báo lỗi & Chặn
-else Đủ điều kiện
-    UI1 -> UI2: Điều hướng sang QuizPlayScreen
-    UI2 -> Provider: getDeckById & generateQuiz(QuizType.multipleChoice)
-    alt Khởi tạo thất bại / Lỗi
-        Provider --> UI2: Trả về false
-        UI2 --> User: Pop màn hình
-    else Thành công
-        Provider --> UI2: Khởi tạo câu hỏi trắc nghiệm
-        loop Vòng lặp câu hỏi
-            User -> UI2: Chọn đáp án hoặc bấm "Bỏ qua"
-            UI2 -> Provider: submitAnswer(userAnswer) / submitAnswer('')
-            Provider -> Provider: nextQuestion()
+User -> UI1: Chọn "Trắc nghiệm"
+UI1 -> DeckProvider: getDeckById(deckId) (trong build)
+DeckProvider --> UI1: Deck → wordCount
+alt wordCount < 4
+    UI1 --> User: SnackBar quiz_notEnoughWordsMc
+else Đủ 4 từ
+    UI1 -> UI2: Navigator.push(QuizPlayScreen(deckId, multipleChoice))
+    UI2 -> DeckProvider: getDeckById(deckId)
+    DeckProvider --> UI2: Deck
+    UI2 -> Quiz: generateQuiz(deck, QuizType.multipleChoice)
+    alt false (không đủ 3 nghĩa nhiễu khác nhau)
+        Quiz --> UI2: false
+        UI2 -> UI1: Navigator.pop
+    else true
+        Quiz --> UI2: true (tối đa 20 câu, mỗi câu 1 đúng + 3 nhiễu)
+        loop Mỗi câu hỏi
+            alt Chọn đáp án
+                User -> UI2: Chọn RadioListTile + bấm Câu tiếp theo / Nộp bài
+                UI2 -> Quiz: submitAnswer(option)
+            else Bỏ qua
+                User -> UI2: Bấm Bỏ qua
+                UI2 -> Quiz: submitAnswer('')
+            end
+            UI2 -> Quiz: nextQuestion()
         end
-        Provider -> Provider: calculateResult()
-        Provider --> UI2: Hoàn thành bài quiz
-        UI2 -> UIResult: pushReplacement sang QuizResultScreen
-        UIResult --> User: Hiển thị điểm số kết quả
+        UI2 -> Quiz: calculateResult()
+        Quiz --> UI2: QuizResult
+        UI2 -> UIResult: Navigator.pushReplacement(QuizResultScreen(result, deckId))
+        UIResult --> User: Điểm % (AnimatedCount) + chi tiết đúng/sai
     end
 end
 @enduml

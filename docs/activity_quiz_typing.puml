@@ -1,31 +1,39 @@
 @startuml
 |Người dùng|
 start
-:Chọn chế độ Điền từ (Typing);
+:Mở QuizScreen, chọn "Điền từ";
 
 |Hệ thống|
-:QuizScreen kiểm tra số lượng từ (Cần >= 1 từ);
-if (Số lượng từ < 1?) then (Đúng)
-  :Hiển thị SnackBar báo lỗi;
+:QuizScreen kiểm tra số từ của bộ (cần >= 1 từ);
+if (Số từ < 1?) then (Đúng)
+  :SnackBar quiz_notEnoughWordsTyping\n(vẫn ở QuizScreen);
   stop
-else (Đủ điều kiện)
-  :Điều hướng sang QuizPlayScreen;
-  :QuizProvider khởi tạo danh sách câu hỏi điền từ;
-  
-  repeat
+else (Có từ)
+  :Navigator.push QuizPlayScreen;
+  :QuizProvider.generateQuiz(deck, typing)\nxáo từ, tối đa 20 câu;
+  if (Sinh câu hỏi thành công?) then (Không)
+    :Navigator.pop về QuizScreen;
+    stop
+  else (Có)
+    repeat
+      |Người dùng|
+      :Đọc nghĩa tiếng Việt (+ phiên âm nếu có);
+      if (Thao tác?) then (Bỏ qua)
+        |Hệ thống|
+        :submitAnswer('') → tính sai;
+      else (Gõ từ + Xác nhận / Enter / Câu tiếp theo)
+        |Hệ thống|
+        :submitAnswer(text)\n(chấm: trim, gộp khoảng trắng, không phân biệt hoa/thường);
+      endif
+      :nextQuestion();
+    repeat while (Còn câu hỏi?) is (Còn)
+    ->Hết;
+    :calculateResult() → QuizResult;
+    :pushReplacement sang QuizResultScreen;
+
     |Người dùng|
-    :Nhập text đáp án vào ô TextField\n(Hoặc bấm Bỏ qua / Xác nhận / Enter / Tiếp theo);
-    
-    |Hệ thống|
-    :QuizProvider submitAnswer(userAnswer) & chuyển câu tiếp theo;
-  repeat while (Còn câu hỏi tiếp theo?) is (Còn)
-  
-  |Hệ thống|
-  :Tính toán điểm số hoàn thành (calculateResult);
-  :Điều hướng sang QuizResultScreen;
-  
-  |Người dùng|
-  :Xem kết quả điểm số điền từ;
+    :Xem điểm %, "Bạn đã gõ" và đáp án đúng của câu sai;
+  endif
 endif
 stop
 @enduml

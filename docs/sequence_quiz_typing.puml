@@ -3,25 +3,40 @@ autonumber
 actor "Người dùng" as User
 participant "QuizScreen" as UI1
 participant "QuizPlayScreen" as UI2
-participant "QuizProvider" as Provider
+participant "DeckProvider" as DeckProvider
+participant "QuizProvider" as Quiz
 participant "QuizResultScreen" as UIResult
 
-User -> UI1: Chọn chế độ Điền từ (Typing)
-UI1 -> UI1: Kiểm tra số lượng từ (Cần >= 1 từ)
-alt Không đủ từ
-    UI1 --> User: Hiển thị SnackBar báo lỗi
-else Đủ điều kiện
-    UI1 -> UI2: Điều hướng sang QuizPlayScreen
-    UI2 -> Provider: generateQuiz(QuizType.typing)
-    Provider --> UI2: Khởi tạo câu hỏi điền từ
-    loop Vòng lặp câu hỏi
-        User -> UI2: Nhập văn bản hoặc bấm "Bỏ qua" / Xác nhận (Enter / Tiếp theo)
-        UI2 -> Provider: submitAnswer(userAnswer)
-        Provider -> Provider: nextQuestion()
+User -> UI1: Chọn "Điền từ"
+UI1 -> DeckProvider: getDeckById(deckId) (trong build)
+DeckProvider --> UI1: Deck → wordCount
+alt wordCount < 1
+    UI1 --> User: SnackBar quiz_notEnoughWordsTyping
+else Có ít nhất 1 từ
+    UI1 -> UI2: Navigator.push(QuizPlayScreen(deckId, typing))
+    UI2 -> DeckProvider: getDeckById(deckId)
+    DeckProvider --> UI2: Deck
+    UI2 -> Quiz: generateQuiz(deck, QuizType.typing)
+    alt false
+        Quiz --> UI2: false
+        UI2 -> UI1: Navigator.pop
+    else true
+        Quiz --> UI2: true (hiển thị nghĩa + phiên âm nếu có)
+        loop Mỗi câu hỏi
+            alt Trả lời
+                User -> UI2: Gõ từ tiếng Anh + bấm Xác nhận / Enter / Câu tiếp theo
+                UI2 -> Quiz: submitAnswer(text)
+            else Bỏ qua
+                User -> UI2: Bấm Bỏ qua
+                UI2 -> Quiz: submitAnswer('')
+            end
+            UI2 -> Quiz: nextQuestion()
+        end
+        UI2 -> Quiz: calculateResult()
+        note right of Quiz: QuizQuestion.isCorrect: trim + gộp khoảng trắng,\nkhông phân biệt hoa/thường; '' luôn sai
+        Quiz --> UI2: QuizResult
+        UI2 -> UIResult: Navigator.pushReplacement(QuizResultScreen(result, deckId))
+        UIResult --> User: Điểm % + "Bạn đã gõ" / đáp án đúng
     end
-    Provider -> Provider: calculateResult()
-    Provider --> UI2: Hoàn tất
-    UI2 -> UIResult: pushReplacement sang QuizResultScreen
-    UIResult --> User: Hiển thị điểm số & kết quả điền từ
 end
 @enduml

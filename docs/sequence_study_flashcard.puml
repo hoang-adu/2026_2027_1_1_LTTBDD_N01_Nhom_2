@@ -1,23 +1,59 @@
 @startuml
 autonumber
 actor "Người dùng" as User
+participant "DeckDetailScreen" as Detail
 participant "StudyScreen" as UI
-participant "StudyProvider" as Provider
+participant "StudyProvider" as Study
 participant "DeckProvider" as DeckProvider
 participant "DeckRepository" as Repo
 participant "SharedPreferences" as Prefs
 
-User -> UI: Mở màn hình học Flashcard
-UI -> Provider: startStudy(deckId)
-Provider -> DeckProvider: getDeckById(deckId)
-DeckProvider --> Provider: Trả về Deck kèm danh sách Word
-User -> UI: Vuốt / Chuyển thẻ
-UI -> Provider: goTo(index)
-User -> UI: Đánh dấu đã thuộc từ (toggleLearned)
-UI -> Provider: toggleLearned(wordId)
-Provider -> Repo: saveDecks(decks)
-Repo -> Prefs: setString('decks_v1', jsonEncode)
-Prefs --> Repo: Lưu thành công
-Repo --> Provider: Hoàn tất
-Provider --> UI: Cập nhật giao diện trạng thái học
+User -> Detail: Bấm nút Học
+Detail -> Detail: _study(deck)
+alt deck.wordCount == 0
+    Detail --> User: SnackBar deck_studyEmpty
+    Detail -> Detail: showWordFormDialog(deckId)
+else Bộ có từ
+    Detail -> UI: Navigator.push(StudyScreen(deckId))
+    UI -> Study: startStudy(deckId)
+    Study -> DeckProvider: getDeckById(deckId)
+    DeckProvider --> Study: Deck
+    Study --> UI: true + notifyListeners()
+
+    loop Học từng thẻ
+        opt Sang thẻ khác
+            User -> UI: Vuốt PageView hoặc bấm nút Tiếp
+            UI -> UI: PageController.nextPage → onPageChanged
+            UI -> Study: goTo(index)
+        end
+        opt Lật thẻ / phát âm
+            User -> UI: Chạm thẻ (FlashcardWidget lật bằng AnimatedSwitcher)
+            User -> UI: Bấm loa
+            UI -> UI: TtsService.instance.speak(term)
+        end
+        opt Đánh dấu đã thuộc
+            User -> UI: Bấm biểu tượng đã thuộc
+            UI -> Study: toggleLearned()
+            Study -> DeckProvider: toggleLearned(deckId, wordId)
+            DeckProvider -> DeckProvider: Word.toggleLearned()
+            DeckProvider -> Repo: saveDecks(decks)
+            Repo -> Prefs: setString('decks_v1', jsonEncode)
+            Prefs --> Repo: true
+            Repo --> DeckProvider: Hoàn tất
+            DeckProvider -> DeckProvider: notifyListeners()
+            Study -> Study: notifyListeners()
+            Study --> UI: Cập nhật biểu tượng đã thuộc
+        end
+    end
+    alt Học hết bộ
+        User -> UI: Bấm Hoàn thành ở thẻ cuối
+        UI -> Study: nextCard()
+        Study -> Study: isFinished = true, notifyListeners()
+        Study --> UI: Hiện màn "Bạn đã hoàn thành bộ thẻ!"
+        User -> UI: Bấm Quay lại
+    else Thoát giữa chừng
+        User -> UI: Bấm nút đóng (X)
+    end
+    UI -> Detail: Navigator.pop
+end
 @enduml
