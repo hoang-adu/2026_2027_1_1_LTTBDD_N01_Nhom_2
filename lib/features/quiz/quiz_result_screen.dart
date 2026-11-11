@@ -3,7 +3,6 @@ import '../../data/models/quiz_result.dart';
 import '../../data/models/quiz_type.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/widgets/animated_count.dart';
-import 'quiz_screen.dart';
 
 /// Màn hình hiển thị kết quả tổng kết sau khi hoàn thành Quiz.
 class QuizResultScreen extends StatelessWidget {
@@ -93,12 +92,9 @@ class QuizResultScreen extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => QuizScreen(deckId: deckId)),
-                      );
-                    },
+                    // Màn kết quả đã thay chỗ màn làm bài → pop là về đúng
+                    // QuizScreen cũ, không tạo thêm QuizScreen chồng lên.
+                    onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
                     child: Text(l10n.quiz_retry),
                   ),
