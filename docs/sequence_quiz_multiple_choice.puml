@@ -19,6 +19,7 @@ else Đủ 4 từ
     UI2 -> Quiz: generateQuiz(deck, QuizType.multipleChoice)
     alt false (không đủ 3 nghĩa nhiễu khác nhau)
         Quiz --> UI2: false
+        UI2 --> User: SnackBar quiz_notEnoughDistinctMeanings (hoặc deck_notFound)
         UI2 -> UI1: Navigator.pop
     else true
         Quiz --> UI2: true (tối đa 20 câu, mỗi câu 1 đúng + 3 nhiễu)

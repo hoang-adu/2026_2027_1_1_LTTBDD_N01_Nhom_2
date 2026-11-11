@@ -35,6 +35,16 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
       final success =
           deck != null && context.read<QuizProvider>().generateQuiz(deck, widget.type);
       if (!success) {
+        // Báo lý do trước khi quay lại (SnackBar vẫn hiện ở màn trước)
+        final l10n = AppLocalizations.of(context);
+        final message = deck == null
+            ? l10n.deck_notFound
+            : widget.type == QuizType.multipleChoice
+                ? l10n.quiz_notEnoughDistinctMeanings
+                : l10n.quiz_notEnoughWordsTyping;
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(message)));
         Navigator.pop(context);
         return;
       }
@@ -62,7 +72,11 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
       _selectedOption = null;
     }
 
-    if (!isSkip && currentQ.isCorrect(userAnswer)) {
+    // Chấm đúng/sai giao cho QuizProvider: điền từ dùng checkTypingAnswer (FR18).
+    final isCorrect = widget.type == QuizType.typing
+        ? quizProvider.checkTypingAnswer(userAnswer)
+        : currentQ.isCorrect(userAnswer);
+    if (!isSkip && isCorrect) {
       _consecutiveCorrect++;
     } else {
       _consecutiveCorrect = 0;

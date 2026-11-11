@@ -19,12 +19,15 @@ else Có ít nhất 1 từ
     UI2 -> Quiz: generateQuiz(deck, QuizType.typing)
     alt false
         Quiz --> UI2: false
+        UI2 --> User: SnackBar quiz_notEnoughWordsTyping (hoặc deck_notFound)
         UI2 -> UI1: Navigator.pop
     else true
         Quiz --> UI2: true (hiển thị nghĩa + phiên âm nếu có)
         loop Mỗi câu hỏi
             alt Trả lời
                 User -> UI2: Gõ từ tiếng Anh + bấm Xác nhận / Enter / Câu tiếp theo
+                UI2 -> Quiz: checkTypingAnswer(text)
+                Quiz --> UI2: đúng/sai (cập nhật combo)
                 UI2 -> Quiz: submitAnswer(text)
             else Bỏ qua
                 User -> UI2: Bấm Bỏ qua
@@ -33,7 +36,7 @@ else Có ít nhất 1 từ
             UI2 -> Quiz: nextQuestion()
         end
         UI2 -> Quiz: calculateResult()
-        note right of Quiz: QuizQuestion.isCorrect: trim + gộp khoảng trắng,\nkhông phân biệt hoa/thường; '' luôn sai
+        note right of Quiz: checkTypingAnswer / QuizQuestion.isCorrect: trim + gộp khoảng trắng,\nkhông phân biệt hoa/thường; '' luôn sai
         Quiz --> UI2: QuizResult
         UI2 -> UIResult: Navigator.pushReplacement(QuizResultScreen(result, deckId))
         UIResult --> User: Điểm % + "Bạn đã gõ" / đáp án đúng

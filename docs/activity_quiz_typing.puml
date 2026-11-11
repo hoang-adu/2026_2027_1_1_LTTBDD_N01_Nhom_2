@@ -12,6 +12,7 @@ else (Có từ)
   :Navigator.push QuizPlayScreen;
   :QuizProvider.generateQuiz(deck, typing)\nxáo từ, tối đa 20 câu;
   if (Sinh câu hỏi thành công?) then (Không)
+    :Hiện SnackBar báo lý do;
     :Navigator.pop về QuizScreen;
     stop
   else (Có)

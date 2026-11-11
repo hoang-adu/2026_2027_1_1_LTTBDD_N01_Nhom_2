@@ -12,6 +12,7 @@ else (Đủ 4 từ)
   :Navigator.push QuizPlayScreen;
   :QuizProvider.generateQuiz(deck, multipleChoice)\nxáo từ, tối đa 20 câu, 1 đúng + 3 nghĩa nhiễu;
   if (Sinh câu hỏi thành công?) then (Không - bộ thiếu 3 nghĩa khác nhau)
+    :Hiện SnackBar báo lý do;
     :Navigator.pop về QuizScreen;
     stop
   else (Có)
