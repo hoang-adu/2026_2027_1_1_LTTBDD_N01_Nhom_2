@@ -3,9 +3,12 @@ autonumber
 actor "Người dùng" as User
 participant "DeckDetailScreen" as UI
 participant "WordListToolbar" as Toolbar
+participant "DeckProvider" as Provider
 
 User -> UI: Nhập từ khóa tìm kiếm vào thanh Toolbar
-UI -> Toolbar: Lọc danh sách từ vựng hiện tại trong bộ (Memory filtering)
-Toolbar --> UI: Trả về danh sách từ khớp với từ khóa
-UI --> User: Hiển thị kết quả tìm kiếm ngay trên màn hình
+UI -> Toolbar: onQueryChanged(keyword)
+Toolbar -> Toolbar: setState() cập nhật từ khóa
+UI -> UI: _visibleWords() gọi DeckProvider.searchWords / filterWords / sortWords
+Toolbar --> UI: Lọc danh sách từ vựng hiện có trong memory (Không gọi Repository)
+UI --> User: Hiển thị kết quả tìm kiếm ngay lập tức trên màn hình
 @enduml

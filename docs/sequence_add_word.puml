@@ -2,17 +2,26 @@
 autonumber
 actor "Người dùng" as User
 participant "DeckDetailScreen" as UI
-participant "WordForm" as Form
+participant "_WordFormDialog" as Dialog
 participant "DeckProvider" as Provider
+participant "Deck" as Model
 participant "DeckRepository" as Repo
 participant "SharedPreferences" as Prefs
 
-User -> UI: Mở chi tiết bộ từ & chọn thêm từ (WordForm)
-User -> Form: Nhập term, meaning, phonetic
-Form -> Provider: addWordToDeck(deckId, newWord)
-Provider -> Repo: saveDecks(decks)
-Repo -> Prefs: setString(key, jsonEncode)
-Prefs --> Repo: Lưu thành công
-Repo --> Provider: Cập nhật state
-Provider --> UI: Cập nhật danh sách từ trong bộ
+User -> UI: Nhấn nút thêm từ (Mở Dialog)
+UI -> Dialog: Hiển thị _WordFormDialog
+User -> Dialog: Nhập term, meaning, phonetic, example & Bấm Lưu
+Dialog -> Dialog: _save() (Kiểm tra validate dữ liệu)
+alt Dữ liệu không hợp lệ (Trống term/meaning)
+    Dialog --> User: Hiển thị lỗi / Không lưu
+else Dữ liệu hợp lệ
+    Dialog -> Provider: addWord(deckId, term, meaning, phonetic, example)
+    Provider -> Model: Deck.addWord(...)
+    Provider -> Repo: saveDecks(decks)
+    Repo -> Prefs: setString('decks_v1', jsonEncode)
+    Prefs --> Repo: Lưu thành công
+    Repo --> Provider: Hoàn tất
+    Provider --> Provider: notifyListeners()
+    Provider --> UI: Cập nhật giao diện danh sách từ
+end
 @enduml

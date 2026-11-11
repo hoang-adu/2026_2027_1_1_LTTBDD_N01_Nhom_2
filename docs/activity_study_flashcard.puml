@@ -1,23 +1,31 @@
 @startuml
 |Người dùng|
 start
-:Mở chi tiết bộ từ và chọn chế độ học Flashcard;
+:Mở chi tiết bộ từ và chọn Học Flashcard;
 
 |Hệ thống|
-:StudyScreen gọi DeckProvider.getDeckById();
-:Tải danh sách từ vựng của bộ từ;
-if (Bộ từ có từ vựng không?) then (Có)
-  |Người dùng|
-  :Xem thẻ flashcard (mặt trước);
-  :Thao tác lật thẻ xem nghĩa (mặt sau);
-  :Bấm chuyển sang thẻ tiếp theo;
+:StudyProvider kiểm tra số lượng từ trong bộ;
+if (Bộ từ rỗng / 0 từ?) then (Đúng)
+  :Hiển thị SnackBar báo lỗi & Mở form thêm từ;
+  stop
+else (Có từ)
+  :Khởi tạo StudyScreen & Tải danh sách từ;
+  
+  repeat
+    |Người dùng|
+    :Xem thẻ flashcard hiện tại;
+    :Vuốt thẻ / Lật mặt sau xem nghĩa / Phát âm / Đánh dấu đã thuộc (toggleLearned);
+    
+    |Hệ thống|
+    :StudyProvider cập nhật trạng thái đã thuộc & lưu SharedPreferences;
+    :Chuyển sang thẻ tiếp theo (goTo);
+    
+    |Người dùng|
+    :Bấm quay lại hoặc xem hết vòng thẻ;
+  repeat while (Tiếp tục học?) is (Còn thẻ/Chưa thoát)
+  
   |Hệ thống|
-  :Cập nhật chỉ số index từ hiện tại;
-else (Không)
-  |Hệ thống|
-  :Hiển thị trạng thái trống (EmptyState);
-  |Người dùng|
-  :Quay lại màn hình trước;
+  :Đóng màn hình học / Quay lại chi tiết bộ;
 endif
 stop
 @enduml

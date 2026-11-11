@@ -4,29 +4,29 @@ start
 :Chọn chế độ Trắc nghiệm (Multiple Choice);
 
 |Hệ thống|
-:Kiểm tra số lượng từ (Cần >= 4 từ);
-if (Đủ điều kiện?) then (Không)
-  :Hiển thị SnackBar báo lỗi thiếu từ;
+:QuizScreen kiểm tra điều kiện (Cần >= 4 từ);
+if (Số lượng từ < 4?) then (Đúng)
+  :Hiển thị SnackBar cảnh báo thiếu từ;
   stop
-else (Đủ)
-  :QuizProvider sinh ngẫu nhiên câu hỏi & 4 đáp án;
-  :Mở màn hình QuizPlayScreen;
+else (Đủ điều kiện)
+  :Điều hướng sang QuizPlayScreen;
+  :QuizProvider sinh ngẫu nhiên danh sách câu hỏi trắc nghiệm;
   
   repeat
     |Người dùng|
-    :Đọc câu hỏi và chọn 1 đáp án;
-    :Bấm nút "Câu tiếp theo" hoặc "Nộp bài";
+    :Đọc câu hỏi và chọn 1 đáp án (hoặc bấm Bỏ qua);
+    :Bấm nút "Tiếp theo" / Nộp câu trả lời;
     
     |Hệ thống|
-    :Lưu câu trả lời vào QuizProvider;
-    :Kiểm tra còn câu hỏi tiếp theo không?;
-  repeat while (Còn câu hỏi?) is (Có)
+    :QuizProvider ghi nhận kết quả (submitAnswer) & chuyển câu hỏi tiếp theo;
+  repeat while (Còn câu hỏi tiếp theo?) is (Còn)
   
   |Hệ thống|
-  :Tính toán kết quả (QuizResult);
-  :Chuyển sang màn hình QuizResultScreen;
+  :Tính toán điểm số kết quả (calculateResult);
+  :Điều hướng thay thế sang QuizResultScreen (pushReplacement);
+  
   |Người dùng|
-  :Xem điểm số và chi tiết đúng/sai;
+  :Xem điểm số tổng kết bài trắc nghiệm;
 endif
 stop
 @enduml

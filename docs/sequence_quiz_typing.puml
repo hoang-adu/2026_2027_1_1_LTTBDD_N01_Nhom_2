@@ -7,11 +7,21 @@ participant "QuizProvider" as Provider
 participant "QuizResultScreen" as UIResult
 
 User -> UI1: Chọn chế độ Điền từ (Typing)
-UI1 -> Provider: generateQuiz(deck, QuizType.typing)
-Provider --> UI1: Khởi tạo danh sách câu hỏi điền từ
-UI1 -> UI2: Điều hướng sang QuizPlayScreen
-User -> UI2: Nhập text vào TextField & Bấm Xác nhận / Bỏ qua
-UI2 -> Provider: submitAnswer(userAnswer), nextQuestion()
-Provider --> UI2: Chuyển câu tiếp theo (hoặc kết thúc)
-UI2 -> UIResult: Chuyển sang QuizResultScreen hiển thị điểm số
+UI1 -> UI1: Kiểm tra số lượng từ (Cần >= 1 từ)
+alt Không đủ từ
+    UI1 --> User: Hiển thị SnackBar báo lỗi
+else Đủ điều kiện
+    UI1 -> UI2: Điều hướng sang QuizPlayScreen
+    UI2 -> Provider: generateQuiz(QuizType.typing)
+    Provider --> UI2: Khởi tạo câu hỏi điền từ
+    loop Vòng lặp câu hỏi
+        User -> UI2: Nhập văn bản hoặc bấm "Bỏ qua" / Xác nhận (Enter / Tiếp theo)
+        UI2 -> Provider: submitAnswer(userAnswer)
+        Provider -> Provider: nextQuestion()
+    end
+    Provider -> Provider: calculateResult()
+    Provider --> UI2: Hoàn tất
+    UI2 -> UIResult: pushReplacement sang QuizResultScreen
+    UIResult --> User: Hiển thị điểm số & kết quả điền từ
+end
 @enduml

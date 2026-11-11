@@ -2,13 +2,22 @@
 autonumber
 actor "Người dùng" as User
 participant "StudyScreen" as UI
-participant "DeckProvider" as Provider
-participant "Deck" as Model
+participant "StudyProvider" as Provider
+participant "DeckProvider" as DeckProvider
+participant "DeckRepository" as Repo
+participant "SharedPreferences" as Prefs
 
-User -> UI: Mở màn hình học Flashcard (study_screen.dart)
-UI -> Provider: getDeckById(deckId)
-Provider --> UI: Trả về đối tượng Deck kèm danh sách Word
-UI -> Model: Hiển thị từ vựng dạng Flashcard (flashcard_widget.dart)
-User -> UI: Lật thẻ / Chuyển thẻ tiếp theo
-UI --> User: Cập nhật trạng thái hiển thị từ vựng
+User -> UI: Mở màn hình học Flashcard
+UI -> Provider: startStudy(deckId)
+Provider -> DeckProvider: getDeckById(deckId)
+DeckProvider --> Provider: Trả về Deck kèm danh sách Word
+User -> UI: Vuốt / Chuyển thẻ
+UI -> Provider: goTo(index)
+User -> UI: Đánh dấu đã thuộc từ (toggleLearned)
+UI -> Provider: toggleLearned(wordId)
+Provider -> Repo: saveDecks(decks)
+Repo -> Prefs: setString('decks_v1', jsonEncode)
+Prefs --> Repo: Lưu thành công
+Repo --> Provider: Hoàn tất
+Provider --> UI: Cập nhật giao diện trạng thái học
 @enduml
