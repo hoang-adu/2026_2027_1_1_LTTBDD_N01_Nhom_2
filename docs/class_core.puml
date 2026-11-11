@@ -1,0 +1,136 @@
+@startuml class_core
+' Biểu đồ lớp phần lõi (Hình 8 trong báo cáo): Model, Repository, Provider, Service.
+' Bản đầy đủ có cả tầng giao diện: class.puml. Khớp mã nguồn ngày 2026-11-11.
+' Không có Profile / History / Favorite (FR16, FR19, FR22 đã loại).
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+hide empty members
+
+package "Model (lib/data/models)" #FFF8EC {
+  class Word {
+    + id : String
+    + term : String
+    + meaning : String
+    + phonetic : String?
+    + example : String?
+    + isLearned : bool
+    --
+    + toggleLearned()
+    + toJson() / fromJson()
+  }
+  class Deck {
+    + id : String
+    + name : String
+    + words : List<Word>
+    --
+    + wordCount : int
+    + learnedCount : int
+    + addWord(w) / updateWord(w) / removeWord(id)
+    + toJson() / fromJson()
+  }
+  enum WordFilter {
+    all
+    learned
+    notLearned
+  }
+  enum QuizType {
+    multipleChoice
+    typing
+  }
+  class QuizQuestion {
+    + id : String
+    + word : Word
+    + options : List<String>
+    + correctAnswer : String
+    + type : QuizType
+    --
+    + isCorrect(answer) : bool
+  }
+  class QuizResult {
+    + totalQuestions : int
+    + correctAnswers : int
+    + questions : List<QuizQuestion>
+    + userAnswers : Map<String, String>
+    --
+    + score : double
+    + answerOf(qId) : String?
+  }
+}
+
+package "Repository (lib/data/repositories)" #F3ECF7 {
+  class DeckRepository {
+    - prefs : SharedPreferences
+    --
+    + loadDecks() : List<Deck>
+    + saveDecks(decks) : Future<void>
+  }
+}
+
+package "Provider – ChangeNotifier (lib/providers)" #EEF6EC {
+  class DeckProvider {
+    - repo : DeckRepository
+    - decks : List<Deck>
+    --
+    + getDecks() / getDeckById(id)
+    + addDeck / updateDeck / deleteDeck
+    + addWord / updateWord / deleteWord
+    + toggleLearned(deckId, wordId)
+    + searchWords / filterWords / sortWords
+    + totalLearnedWords / deckProgress(deckId)
+  }
+  class StudyProvider {
+    - deckProvider : DeckProvider
+    + currentDeck / currentWord / currentIndex
+    --
+    + startStudy(deckId) : bool
+    + nextCard() / previousCard() / goTo(i)
+    + isFinished : bool
+    + toggleLearned()
+  }
+  class QuizProvider {
+    + questions : List<QuizQuestion>
+    + currentIndex / quizType
+    --
+    + generateQuiz(deck, type) : bool
+    + submitAnswer(answer)
+    + checkTypingAnswer(answer) : bool
+    + nextQuestion() / hasNext
+    + calculateResult() : QuizResult
+  }
+  class LocaleProvider {
+    + currentLocale : Locale
+    --
+    + changeLocale(l) / toggleLanguage()
+  }
+  class ThemeProvider {
+    + isDarkMode : bool
+    --
+    + toggleTheme()
+  }
+}
+
+class TtsService <<singleton>> {
+  + speak(text, lang) / stop()
+}
+class "SharedPreferences" as Prefs <<shared_preferences>> {
+  decks_v1 / app_locale / is_dark_mode
+}
+
+Deck "1" *-- "0..*" Word : words
+QuizQuestion --> Word
+QuizQuestion --> QuizType
+QuizResult o-- "0..*" QuizQuestion
+
+DeckRepository ..> Deck : JSON <-> Model
+DeckRepository --> Prefs
+DeckProvider --> DeckRepository
+DeckProvider o-- "0..*" Deck
+DeckProvider ..> WordFilter
+StudyProvider --> DeckProvider : toggleLearned
+QuizProvider ..> Deck : generateQuiz
+QuizProvider o-- "0..20" QuizQuestion
+QuizProvider ..> QuizResult : <<create>>
+LocaleProvider --> Prefs
+ThemeProvider --> Prefs
+@enduml
