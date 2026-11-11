@@ -1,8 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'app.dart';
+import 'core/constants.dart';
+import 'data/sample_decks.dart';
 import 'data/repositories/deck_repository.dart';
 import 'providers/deck_provider.dart';
 import 'providers/locale_provider.dart';
@@ -13,6 +16,13 @@ import 'providers/theme_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
+
+  // Bản debug: lần chạy đầu (chưa có dữ liệu) thì nạp bộ từ mẫu để thử nhanh.
+  // Bản release không chạy đoạn này.
+  if (kDebugMode && !prefs.containsKey(kDecksStorageKey)) {
+    await DeckRepository(prefs).saveDecks(buildSampleDecks());
+  }
+
   runApp(AppProviders(prefs: prefs, child: const FlashcardApp()));
 }
 
