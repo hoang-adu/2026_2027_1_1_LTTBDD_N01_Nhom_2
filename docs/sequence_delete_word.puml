@@ -2,15 +2,21 @@
 autonumber
 actor "Người dùng" as User
 participant "DeckDetailScreen" as UI
+participant "ConfirmDialog" as Dialog
 participant "DeckProvider" as Provider
+participant "Deck" as Model
 participant "DeckRepository" as Repo
 participant "SharedPreferences" as Prefs
 
-User -> UI: Thực hiện thao tác xóa từ (Swipe / Nút xóa)
-UI -> Provider: removeWordFromDeck(deckId, wordId)
+User -> UI: Vuốt Dismissible để xóa từ / Nhấn nút xóa
+UI -> Dialog: Hiển thị showConfirmDeleteDialog xác nhận
+User -> Dialog: Xác nhận đồng ý xóa
+Dialog -> Provider: deleteWord(deckId, wordId)
+Provider -> Model: Deck.removeWord(wordId)
 Provider -> Repo: saveDecks(decks)
-Repo -> Prefs: setString(key, jsonEncode)
+Repo -> Prefs: setString('decks_v1', jsonEncode)
 Prefs --> Repo: Lưu thành công
-Repo --> Provider: Cập nhật state bộ từ
-Provider --> UI: Xóa từ khỏi danh sách hiển thị
+Repo --> Provider: Hoàn tất
+Provider --> Provider: notifyListeners()
+Provider --> UI: Xóa từ khỏi UI & Hiển thị SnackBar (word_deleted)
 @enduml
