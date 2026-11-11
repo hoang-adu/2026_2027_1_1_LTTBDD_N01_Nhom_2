@@ -26,6 +26,11 @@ class QuizResultScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Phần điểm + chi tiết cuộn chung một danh sách để không tràn ở
+            // màn thấp (vd. 320x568 xoay ngang); hàng nút dưới luôn cố định.
+            Expanded(
+              child: ListView(
+                children: [
             Icon(Icons.emoji_events, size: 80, color: colorScheme.primary),
             const SizedBox(height: 16),
             // Sử dụng AnimatedCount của Đạt cho phần trăm điểm số (mục 3 prompt)
@@ -49,11 +54,9 @@ class QuizResultScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            Expanded(
-              child: ListView.builder(
-                itemCount: result.questions.length,
-                itemBuilder: (context, index) {
-                  final question = result.questions[index];
+            for (final question in result.questions)
+              Builder(
+                builder: (context) {
                   final userAnswer = result.answerOf(question.id) ?? '';
                   final isCorrect = question.isCorrect(userAnswer);
 
@@ -85,6 +88,8 @@ class QuizResultScreen extends StatelessWidget {
                     ),
                   );
                 },
+              ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
