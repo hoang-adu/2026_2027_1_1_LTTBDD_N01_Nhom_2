@@ -133,10 +133,15 @@ class _StudyScreenState extends State<StudyScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _LearnedButton(
-                            isLearned: provider.currentWord?.isLearned == true,
-                            onPressed: provider.toggleLearned,
+                          // Flexible: màn hẹp (320dp) thì nút co lại, nhãn
+                          // rút gọn bằng "…" thay vì tràn ngang (NFR05).
+                          Flexible(
+                            child: _LearnedButton(
+                              isLearned: provider.currentWord?.isLearned == true,
+                              onPressed: provider.toggleLearned,
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           Text(
                             '${provider.currentIndex + 1}/$total',
                             style: const TextStyle(
@@ -183,13 +188,21 @@ class _LearnedButton extends StatelessWidget {
               key: key,
               onPressed: onPressed,
               icon: const Icon(Icons.check_circle),
-              label: Text(l10n.word_learned),
+              label: Text(
+                l10n.word_learned,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             )
           : OutlinedButton.icon(
               key: key,
               onPressed: onPressed,
               icon: const Icon(Icons.radio_button_unchecked),
-              label: Text(l10n.word_notLearned),
+              label: Text(
+                l10n.word_notLearned,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
     );
   }

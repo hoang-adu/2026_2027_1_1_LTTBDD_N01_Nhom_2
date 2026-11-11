@@ -3,7 +3,6 @@ import '../../data/models/quiz_result.dart';
 import '../../data/models/quiz_type.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/widgets/animated_count.dart';
-import 'quiz_screen.dart';
 
 /// Màn hình hiển thị kết quả tổng kết sau khi hoàn thành Quiz.
 class QuizResultScreen extends StatelessWidget {
@@ -27,6 +26,11 @@ class QuizResultScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Phần điểm + chi tiết cuộn chung một danh sách để không tràn ở
+            // màn thấp (vd. 320x568 xoay ngang); hàng nút dưới luôn cố định.
+            Expanded(
+              child: ListView(
+                children: [
             Icon(Icons.emoji_events, size: 80, color: colorScheme.primary),
             const SizedBox(height: 16),
             // Sử dụng AnimatedCount của Đạt cho phần trăm điểm số (mục 3 prompt)
@@ -50,11 +54,9 @@ class QuizResultScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
-            Expanded(
-              child: ListView.builder(
-                itemCount: result.questions.length,
-                itemBuilder: (context, index) {
-                  final question = result.questions[index];
+            for (final question in result.questions)
+              Builder(
+                builder: (context) {
                   final userAnswer = result.answerOf(question.id) ?? '';
                   final isCorrect = question.isCorrect(userAnswer);
 
@@ -87,18 +89,17 @@ class QuizResultScreen extends StatelessWidget {
                   );
                 },
               ),
+                ],
+              ),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => QuizScreen(deckId: deckId)),
-                      );
-                    },
+                    // Màn kết quả đã thay chỗ màn làm bài → pop là về đúng
+                    // QuizScreen cũ, không tạo thêm QuizScreen chồng lên.
+                    onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
                     child: Text(l10n.quiz_retry),
                   ),

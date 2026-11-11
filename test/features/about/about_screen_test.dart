@@ -45,7 +45,7 @@ void main() {
       expect(find.text('Giới thiệu'), findsOneWidget);
       expect(find.text('Lập trình cho thiết bị di động – N01'),
           findsOneWidget);
-      expect(find.text('Nhóm 7'), findsOneWidget);
+      expect(find.text('Nhóm 2'), findsOneWidget);
       expect(find.text('ThS. Nguyễn Xuân Quế'), findsOneWidget);
       expect(find.text('Đại học Phenikaa'), findsOneWidget);
     });
@@ -57,7 +57,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('About'), findsOneWidget);
-      expect(find.text('Group 7'), findsOneWidget);
+      expect(find.text('Group 2'), findsOneWidget);
       expect(find.text('Team members'), findsOneWidget);
     });
 

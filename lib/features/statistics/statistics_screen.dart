@@ -50,9 +50,10 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    // Căn giữa khi đủ chỗ, cuộn được khi màn thấp (vd. 320x568 xoay ngang).
     return Center(
       key: const Key('statistics_empty'),
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
