@@ -135,4 +135,10 @@
   "deck_sortZA": "Z–A",
   "deck_noResultsTitle": "Không tìm thấy từ phù hợp",
   "deck_noResultsHint": "Thử từ khóa khác hoặc đổi bộ lọc."
+  "studyEmptyTitle": "Bộ thẻ rỗng",
+  "studyEmptyMessage": "Bộ flashcard này hiện chưa có từ vựng nào.",
+  "dialogConfirm": "Xác nhận",
+  "studyFlashcardTitle": "Học Flashcard",
+  "studyFinishedMessage": "Bạn đã hoàn thành bộ thẻ!",
+  "studyBack": "Quay lại"
 }

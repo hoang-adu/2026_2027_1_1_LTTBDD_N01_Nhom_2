@@ -147,4 +147,10 @@
   "deck_sortZA": "Z–A",
   "deck_noResultsTitle": "No matching words",
   "deck_noResultsHint": "Try another keyword or change the filter."
+  "studyEmptyTitle": "Empty Deck",
+  "studyEmptyMessage": "This flashcard deck currently has no vocabulary words.",
+  "dialogConfirm": "Confirm",
+  "studyFlashcardTitle": "Study Flashcard",
+  "studyFinishedMessage": "You have completed the deck!",
+  "studyBack": "Back"
 }

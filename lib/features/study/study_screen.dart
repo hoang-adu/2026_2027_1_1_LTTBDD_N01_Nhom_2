@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../providers/study_provider.dart';
+import '../../features/providers/study_provider.dart';
 import '../../core/services/tts_service.dart';
+import '../../l10n/app_localizations.dart';
 import 'flashcard_widget.dart';
 
 class StudyScreen extends StatefulWidget {
@@ -21,7 +22,10 @@ class _StudyScreenState extends State<StudyScreen> {
   void initState() {
     super.initState();
     _pageController = PageController();
+    
+    // Gọi startStudy an toàn sau khi widget đã dựng xong khung hình đầu tiên
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final success = context.read<StudyProvider>().startStudy(widget.deckId);
       if (!success) {
         _handleEmptyDeck();
@@ -30,19 +34,21 @@ class _StudyScreenState extends State<StudyScreen> {
   }
 
   void _handleEmptyDeck() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Text('Bộ thẻ rỗng'),
-        content: const Text('Bộ flashcard này hiện chưa có từ vựng nào.'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.studyEmptyTitle),
+        content: Text(l10n.studyEmptyMessage),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
+              Navigator.pop(dialogContext); // Đóng dialog
+              Navigator.pop(context); // Thoát StudyScreen
             },
-            child: const Text('Xác nhận'),
+            child: Text(l10n.dialogConfirm),
           ),
         ],
       ),
@@ -57,6 +63,8 @@ class _StudyScreenState extends State<StudyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Consumer<StudyProvider>(
       builder: (context, provider, child) {
         final deck = provider.currentDeck;
@@ -65,7 +73,7 @@ class _StudyScreenState extends State<StudyScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(deck?.name ?? 'Học Flashcard'),
+            title: Text(deck?.name ?? l10n.studyFlashcardTitle),
             actions: [
               IconButton(
                 icon: const Icon(Icons.close),
@@ -87,13 +95,13 @@ class _StudyScreenState extends State<StudyScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'Bạn đã hoàn thành bộ thẻ!',
+                        l10n.studyFinishedMessage,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('Quay lại'),
+                        child: Text(l10n.studyBack),
                       ),
                     ],
                   ),
