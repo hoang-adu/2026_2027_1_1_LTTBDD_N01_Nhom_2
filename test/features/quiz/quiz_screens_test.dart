@@ -93,6 +93,28 @@ void main() {
     expect(find.byType(QuizPlayScreen), findsNothing);
   });
 
+  testWidgets(
+      'Đủ 4 từ nhưng < 4 nghĩa khác nhau → SnackBar báo lý do, quay về QuizScreen',
+      (tester) async {
+    await pumpQuiz(
+      tester,
+      Deck(id: deckId, name: 'Trùng nghĩa', words: [
+        for (var i = 0; i < 4; i++)
+          Word(id: 'w$i', term: 'term$i', meaning: i < 2 ? 'giống' : 'khác $i'),
+      ]),
+    );
+
+    await tester.tap(find.text('Trắc nghiệm'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(QuizPlayScreen), findsNothing);
+    expect(find.byType(QuizScreen), findsOneWidget);
+    expect(
+      find.text('Chế độ Trắc nghiệm cần bộ từ có ít nhất 4 nghĩa khác nhau.'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('Luồng trắc nghiệm: chọn → làm hết → màn kết quả đúng điểm',
       (tester) async {
     await pumpQuiz(tester, deckWith(4));

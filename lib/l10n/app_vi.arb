@@ -140,5 +140,8 @@
   "study_finished": "Bạn đã hoàn thành bộ thẻ!",
   "study_back": "Quay lại",
   "study_next": "Thẻ tiếp theo",
-  "study_finish": "Hoàn thành"
+  "study_finish": "Hoàn thành",
+  "study_example": "Ví dụ: “{example}”",
+  "quiz_notEnoughDistinctMeanings": "Chế độ Trắc nghiệm cần bộ từ có ít nhất 4 nghĩa khác nhau.",
+  "study_toggleLearnedTooltip": "Bấm để đánh dấu từ này đã thuộc / chưa thuộc"
 }

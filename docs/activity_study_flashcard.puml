@@ -32,7 +32,7 @@ else (Có từ)
       :TtsService.speak(term);
     split again
       |Người dùng|
-      :Bấm đánh dấu đã thuộc;
+      :Bấm nút "Chưa thuộc" / "Đã thuộc";
       |Hệ thống|
       :StudyProvider.toggleLearned()\n→ DeckProvider.toggleLearned()\n→ lưu SharedPreferences;
     split again
@@ -48,7 +48,7 @@ else (Có từ)
   :StudyProvider.nextCard() → isFinished = true;
   :Hiện màn "Bạn đã hoàn thành bộ thẻ!";
   |Người dùng|
-  :Bấm Quay lại (hoặc nút X bất cứ lúc nào);
+  :Bấm Quay lại (hoặc nút ← bất cứ lúc nào);
   |Hệ thống|
   :Quay lại DeckDetailScreen;
 endif

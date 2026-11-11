@@ -152,5 +152,9 @@
   "study_finished": "You have finished the deck!",
   "study_back": "Back",
   "study_next": "Next card",
-  "study_finish": "Finish"
+  "study_finish": "Finish",
+  "study_example": "Example: “{example}”",
+  "@study_example": { "placeholders": { "example": { "type": "String" } } },
+  "quiz_notEnoughDistinctMeanings": "Multiple Choice needs at least 4 different meanings in the deck.",
+  "study_toggleLearnedTooltip": "Tap to mark this word as learned / not learned"
 }

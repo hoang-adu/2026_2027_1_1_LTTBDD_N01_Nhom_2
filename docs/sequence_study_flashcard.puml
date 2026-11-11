@@ -32,7 +32,7 @@ else Bộ có từ
             UI -> UI: TtsService.instance.speak(term)
         end
         opt Đánh dấu đã thuộc
-            User -> UI: Bấm biểu tượng đã thuộc
+            User -> UI: Bấm nút "Chưa thuộc" / "Đã thuộc"
             UI -> Study: toggleLearned()
             Study -> DeckProvider: toggleLearned(deckId, wordId)
             DeckProvider -> DeckProvider: Word.toggleLearned()
@@ -42,7 +42,7 @@ else Bộ có từ
             Repo --> DeckProvider: Hoàn tất
             DeckProvider -> DeckProvider: notifyListeners()
             Study -> Study: notifyListeners()
-            Study --> UI: Cập nhật biểu tượng đã thuộc
+            Study --> UI: Cập nhật nút (Chưa thuộc ↔ Đã thuộc ✓)
         end
     end
     alt Học hết bộ

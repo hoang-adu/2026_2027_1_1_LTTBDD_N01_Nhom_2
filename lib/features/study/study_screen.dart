@@ -72,15 +72,8 @@ class _StudyScreenState extends State<StudyScreen> {
         final total = words.length;
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(deck?.name ?? l10n.study_title),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
+          // Nút ← mặc định của AppBar đã dùng để thoát màn học.
+          appBar: AppBar(title: Text(deck?.name ?? l10n.study_title)),
           body: total == 0
               ? const SizedBox.shrink()
               : provider.isFinished
@@ -140,17 +133,9 @@ class _StudyScreenState extends State<StudyScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          IconButton(
-                            onPressed: () => provider.toggleLearned(),
-                            icon: Icon(
-                              provider.currentWord?.isLearned == true
-                                  ? Icons.check_circle
-                                  : Icons.circle_outlined,
-                              color: provider.currentWord?.isLearned == true
-                                  ? Colors.green
-                                  : null,
-                              size: 28,
-                            ),
+                          _LearnedButton(
+                            isLearned: provider.currentWord?.isLearned == true,
+                            onPressed: provider.toggleLearned,
                           ),
                           Text(
                             '${provider.currentIndex + 1}/$total',
@@ -175,6 +160,37 @@ class _StudyScreenState extends State<StudyScreen> {
                 ),
         );
       },
+    );
+  }
+}
+
+/// Nút đánh dấu đã thuộc / chưa thuộc (FR08), có chữ để người dùng dễ nhận biết.
+class _LearnedButton extends StatelessWidget {
+  const _LearnedButton({required this.isLearned, required this.onPressed});
+
+  final bool isLearned;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    const key = ValueKey('study_learnedButton');
+
+    return Tooltip(
+      message: l10n.study_toggleLearnedTooltip,
+      child: isLearned
+          ? FilledButton.tonalIcon(
+              key: key,
+              onPressed: onPressed,
+              icon: const Icon(Icons.check_circle),
+              label: Text(l10n.word_learned),
+            )
+          : OutlinedButton.icon(
+              key: key,
+              onPressed: onPressed,
+              icon: const Icon(Icons.radio_button_unchecked),
+              label: Text(l10n.word_notLearned),
+            ),
     );
   }
 }

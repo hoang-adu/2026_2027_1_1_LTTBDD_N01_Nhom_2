@@ -2,7 +2,9 @@ import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_theme.dart';
 import '../../data/models/word.dart';
+import '../../l10n/app_localizations.dart';
 
 class FlashcardWidget extends StatefulWidget {
   final Word word;
@@ -69,13 +71,6 @@ class _FlashcardWidgetState extends State<FlashcardWidget> {
                             ?.copyWith(fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 12),
-                      if (phonetic.isNotEmpty)
-                        Text(
-                          phonetic,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontStyle: FontStyle.italic),
-                        ),
                       const SizedBox(height: 24),
                       IconButton(
                         icon: const Icon(Icons.volume_up),
@@ -97,10 +92,19 @@ class _FlashcardWidgetState extends State<FlashcardWidget> {
                             ?.copyWith(fontWeight: FontWeight.w500),
                         textAlign: TextAlign.center,
                       ),
+                      // Mặt sau: nghĩa, phiên âm, ví dụ (UC07 bước 3 trong báo cáo)
+                      if (phonetic.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          phonetic,
+                          style: AppTheme.monoStyle(fontSize: 18),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       if (example.isNotEmpty)
                         Text(
-                          'Ví dụ: "$example"',
+                          AppLocalizations.of(context).study_example(example),
                           style: Theme.of(context).textTheme.bodyLarge,
                           textAlign: TextAlign.center,
                         ),
