@@ -22,7 +22,8 @@ class QuizScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.quiz_title),
       ),
-      body: Padding(
+      // Cuộn được khi màn thấp (vd. 320x568 xoay ngang), tránh tràn đáy.
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
