@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../features/providers/study_provider.dart';
+import '../../providers/study_provider.dart';
 import '../../core/services/tts_service.dart';
 import '../../l10n/app_localizations.dart';
 import 'flashcard_widget.dart';
@@ -22,7 +22,7 @@ class _StudyScreenState extends State<StudyScreen> {
   void initState() {
     super.initState();
     _pageController = PageController();
-    
+
     // Gọi startStudy an toàn sau khi widget đã dựng xong khung hình đầu tiên
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -35,20 +35,20 @@ class _StudyScreenState extends State<StudyScreen> {
 
   void _handleEmptyDeck() {
     if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.studyEmptyTitle),
-        content: Text(l10n.studyEmptyMessage),
+        title: Text(l10n.study_emptyTitle),
+        content: Text(l10n.study_emptyDeck),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(dialogContext); // Đóng dialog
               Navigator.pop(context); // Thoát StudyScreen
             },
-            child: Text(l10n.dialogConfirm),
+            child: Text(l10n.study_confirm),
           ),
         ],
       ),
@@ -63,7 +63,7 @@ class _StudyScreenState extends State<StudyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Consumer<StudyProvider>(
       builder: (context, provider, child) {
@@ -73,7 +73,7 @@ class _StudyScreenState extends State<StudyScreen> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(deck?.name ?? l10n.studyFlashcardTitle),
+            title: Text(deck?.name ?? l10n.study_title),
             actions: [
               IconButton(
                 icon: const Icon(Icons.close),
@@ -95,13 +95,13 @@ class _StudyScreenState extends State<StudyScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        l10n.studyFinishedMessage,
+                        l10n.study_finished,
                         style: Theme.of(context).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 24),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text(l10n.studyBack),
+                        child: Text(l10n.study_back),
                       ),
                     ],
                   ),
@@ -159,7 +159,15 @@ class _StudyScreenState extends State<StudyScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(width: 48),
+                          _NextCardButton(
+                            isLast: provider.currentIndex >= total - 1,
+                            onNext: () => _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeOut,
+                            ),
+                            // Thẻ cuối → nextCard() bật isFinished → màn hoàn thành
+                            onFinish: provider.nextCard,
+                          ),
                         ],
                       ),
                     ],
@@ -167,6 +175,30 @@ class _StudyScreenState extends State<StudyScreen> {
                 ),
         );
       },
+    );
+  }
+}
+
+/// Nút sang thẻ tiếp theo; ở thẻ cuối đổi thành nút Hoàn thành.
+class _NextCardButton extends StatelessWidget {
+  const _NextCardButton({
+    required this.isLast,
+    required this.onNext,
+    required this.onFinish,
+  });
+
+  final bool isLast;
+  final VoidCallback onNext;
+  final VoidCallback onFinish;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return IconButton(
+      key: const ValueKey('study_nextButton'),
+      tooltip: isLast ? l10n.study_finish : l10n.study_next,
+      onPressed: isLast ? onFinish : onNext,
+      icon: Icon(isLast ? Icons.done_all : Icons.arrow_forward, size: 28),
     );
   }
 }

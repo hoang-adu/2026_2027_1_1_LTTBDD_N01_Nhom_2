@@ -134,11 +134,11 @@
   "deck_sortAZ": "A–Z",
   "deck_sortZA": "Z–A",
   "deck_noResultsTitle": "Không tìm thấy từ phù hợp",
-  "deck_noResultsHint": "Thử từ khóa khác hoặc đổi bộ lọc."
-  "studyEmptyTitle": "Bộ thẻ rỗng",
-  "studyEmptyMessage": "Bộ flashcard này hiện chưa có từ vựng nào.",
-  "dialogConfirm": "Xác nhận",
-  "studyFlashcardTitle": "Học Flashcard",
-  "studyFinishedMessage": "Bạn đã hoàn thành bộ thẻ!",
-  "studyBack": "Quay lại"
+  "deck_noResultsHint": "Thử từ khóa khác hoặc đổi bộ lọc.",
+  "study_emptyTitle": "Bộ thẻ rỗng",
+  "study_confirm": "Xác nhận",
+  "study_finished": "Bạn đã hoàn thành bộ thẻ!",
+  "study_back": "Quay lại",
+  "study_next": "Thẻ tiếp theo",
+  "study_finish": "Hoàn thành"
 }

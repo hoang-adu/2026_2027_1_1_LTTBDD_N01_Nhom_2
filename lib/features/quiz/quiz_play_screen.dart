@@ -196,24 +196,23 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
               const SizedBox(height: 24),
               if (widget.type == QuizType.multipleChoice) ...[
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: question.options.length,
-                    itemBuilder: (context, index) {
-                      final option = question.options[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 6),
-                        child: RadioListTile<String>(
-                          title: Text(option, style: const TextStyle(fontSize: 16)),
-                          value: option,
-                          groupValue: _selectedOption,
-                          onChanged: (val) {
-                            setState(() {
-                              _selectedOption = val;
-                            });
-                          },
-                        ),
-                      );
-                    },
+                  // RadioGroup quản lý đáp án đang chọn (thay groupValue/onChanged đã deprecated)
+                  child: RadioGroup<String>(
+                    groupValue: _selectedOption,
+                    onChanged: (val) => setState(() => _selectedOption = val),
+                    child: ListView.builder(
+                      itemCount: question.options.length,
+                      itemBuilder: (context, index) {
+                        final option = question.options[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          child: RadioListTile<String>(
+                            title: Text(option, style: const TextStyle(fontSize: 16)),
+                            value: option,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ] else ...[

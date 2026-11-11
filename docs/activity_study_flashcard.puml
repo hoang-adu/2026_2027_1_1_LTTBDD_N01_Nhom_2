@@ -1,31 +1,56 @@
 @startuml
 |Người dùng|
 start
-:Mở chi tiết bộ từ và chọn Học Flashcard;
+:Mở chi tiết bộ từ (DeckDetailScreen);
+:Bấm nút Học;
 
 |Hệ thống|
-:StudyProvider kiểm tra số lượng từ trong bộ;
-if (Bộ từ rỗng / 0 từ?) then (Đúng)
-  :Hiển thị SnackBar báo lỗi & Mở form thêm từ;
+:DeckDetailScreen._study() kiểm tra deck.wordCount;
+if (Bộ rỗng (0 từ)?) then (Đúng)
+  :SnackBar "Bộ từ chưa có từ vựng,\nvui lòng thêm từ trước khi học";
+  :Mở form thêm từ (showWordFormDialog);
+  |Người dùng|
+  :Thêm từ hoặc hủy form;
   stop
 else (Có từ)
-  :Khởi tạo StudyScreen & Tải danh sách từ;
-  
+  |Hệ thống|
+  :Mở StudyScreen;
+  :StudyProvider.startStudy(deckId)\n(lấy Deck qua DeckProvider.getDeckById);
+  :Hiển thị thẻ đầu tiên + thanh tiến độ;
+
   repeat
     |Người dùng|
-    :Xem thẻ flashcard hiện tại;
-    :Vuốt thẻ / Lật mặt sau xem nghĩa / Phát âm / Đánh dấu đã thuộc (toggleLearned);
-    
-    |Hệ thống|
-    :StudyProvider cập nhật trạng thái đã thuộc & lưu SharedPreferences;
-    :Chuyển sang thẻ tiếp theo (goTo);
-    
+    :Chọn thao tác trên thẻ;
+    split
+      :Chạm thẻ để lật;
+      |Hệ thống|
+      :FlashcardWidget lật mặt (AnimatedSwitcher);
+    split again
+      |Người dùng|
+      :Bấm loa;
+      |Hệ thống|
+      :TtsService.speak(term);
+    split again
+      |Người dùng|
+      :Bấm đánh dấu đã thuộc;
+      |Hệ thống|
+      :StudyProvider.toggleLearned()\n→ DeckProvider.toggleLearned()\n→ lưu SharedPreferences;
+    split again
+      |Người dùng|
+      :Vuốt thẻ hoặc bấm nút Tiếp;
+      |Hệ thống|
+      :StudyProvider.goTo(index), cập nhật tiến độ;
+    end split
     |Người dùng|
-    :Bấm quay lại hoặc xem hết vòng thẻ;
-  repeat while (Tiếp tục học?) is (Còn thẻ/Chưa thoát)
-  
+  repeat while (Chưa tới thẻ cuối hoặc muốn học tiếp?) is (Tiếp tục)
+  ->Bấm Hoàn thành ở thẻ cuối;
   |Hệ thống|
-  :Đóng màn hình học / Quay lại chi tiết bộ;
+  :StudyProvider.nextCard() → isFinished = true;
+  :Hiện màn "Bạn đã hoàn thành bộ thẻ!";
+  |Người dùng|
+  :Bấm Quay lại (hoặc nút X bất cứ lúc nào);
+  |Hệ thống|
+  :Quay lại DeckDetailScreen;
 endif
 stop
 @enduml
